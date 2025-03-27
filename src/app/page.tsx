@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../lib/subabase";
+import { supabase } from "../../lib/supabase";
 import MainLayout from "@/components/layout/MainLayout";
 import Link from "next/link";
 

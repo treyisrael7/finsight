@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../../lib/subabase";
-import { rateLimiter } from "@/lib/rateLimit";
+import { supabase } from "../../../lib/supabase"; // Ensure this path is correct
+import { rateLimiter } from "@/lib/rateLimit"; // Ensure this path is correct
 
 export default function LoginPage() {
   const router = useRouter();

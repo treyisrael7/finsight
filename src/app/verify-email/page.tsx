@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../../lib/subabase";
+import { supabase } from "../../../lib/supabase";
 
 export default function VerifyEmailPage() {
   const router = useRouter();

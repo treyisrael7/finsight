@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../../lib/subabase";
+import { supabase } from "../../../lib/supabase";
 import { validatePassword } from "@/lib/validation";
 import { rateLimiter } from "@/lib/rateLimit";
 
