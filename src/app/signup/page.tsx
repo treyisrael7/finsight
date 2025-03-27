@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '../../../lib/subabase';
-import { validatePassword } from '@/lib/validation';
-import { rateLimiter } from '@/lib/rateLimit';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "../../../lib/subabase";
+import { validatePassword } from "@/lib/validation";
+import { rateLimiter } from "@/lib/rateLimit";
 
 export default function SignupPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const handleSignup = async () => {
     setIsLoading(true);
-    setError('');
+    setError("");
     setValidationErrors([]);
 
     // Check rate limiting
@@ -30,7 +30,7 @@ export default function SignupPage() {
 
     // Validate passwords match
     if (password !== confirmPassword) {
-      setValidationErrors(['Passwords do not match']);
+      setValidationErrors(["Passwords do not match"]);
       setIsLoading(false);
       return;
     }
@@ -57,10 +57,10 @@ export default function SignupPage() {
       } else {
         // Reset rate limit on successful signup
         rateLimiter.reset(email);
-        router.push('/verify-email');
+        router.push("/verify-email");
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again later.');
+      setError("An unexpected error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +69,7 @@ export default function SignupPage() {
   return (
     <div className="max-w-sm mx-auto mt-16 p-6 border rounded">
       <h1 className="text-xl font-bold mb-4">Create Account</h1>
-      
+
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded mb-4">
           {error}
@@ -94,7 +94,10 @@ export default function SignupPage() {
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Email
           </label>
           <input
@@ -108,7 +111,10 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Password
           </label>
           <input
@@ -122,7 +128,10 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Confirm Password
           </label>
           <input
@@ -139,14 +148,15 @@ export default function SignupPage() {
           onClick={handleSignup}
           disabled={isLoading || isRateLimited}
           className={`w-full py-2 px-4 rounded text-white font-medium
-            ${isLoading || isRateLimited
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-green-600 hover:bg-green-700'
+            ${
+              isLoading || isRateLimited
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700"
             }`}
         >
-          {isLoading ? 'Creating Account...' : 'Sign Up'}
+          {isLoading ? "Creating Account..." : "Sign Up"}
         </button>
       </div>
     </div>
   );
-} 
+}

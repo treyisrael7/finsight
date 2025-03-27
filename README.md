@@ -7,11 +7,13 @@ FinLingo is a gamified platform for learning financial literacy, inspired by Duo
 ## Features
 
 Currently Implemented:
+
 - 📱 Mobile-responsive design
 - 📚 Basic learning interface
 - 🎯 Simple progress tracking
 
 Planned Features:
+
 - 🎮 More interactive learning exercises
 - 🏆 Achievement system
 - 👥 Social features and leaderboards
@@ -32,10 +34,12 @@ Planned Features:
    npm install
    ```
 3. Set up your environment variables:
+
    - Copy `.env.local.example` to `.env.local`
    - Add your Supabase credentials
 
 4. Run the development server:
+
    ```bash
    npm run dev
    ```

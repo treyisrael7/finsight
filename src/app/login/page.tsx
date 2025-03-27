@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '../../../lib/subabase';
-import { rateLimiter } from '@/lib/rateLimit';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "../../../lib/subabase";
+import { rateLimiter } from "@/lib/rateLimit";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
 
   const handleLogin = async () => {
     setIsLoading(true);
-    setError('');
+    setError("");
 
     // Check rate limiting
     if (rateLimiter.isRateLimited(email)) {
@@ -35,10 +35,10 @@ export default function LoginPage() {
       } else {
         // Reset rate limit on successful login
         rateLimiter.reset(email);
-        router.push('/dashboard');
+        router.push("/dashboard");
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again later.');
+      setError("An unexpected error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +47,7 @@ export default function LoginPage() {
   useEffect(() => {
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
-      if (data.session) router.push('/dashboard');
+      if (data.session) router.push("/dashboard");
     };
     getSession();
   }, [router]);
@@ -55,7 +55,7 @@ export default function LoginPage() {
   return (
     <div className="max-w-sm mx-auto mt-16 p-6 border rounded">
       <h1 className="text-xl font-bold mb-4">Login to FinLingo</h1>
-      
+
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded mb-4">
           {error}
@@ -70,7 +70,10 @@ export default function LoginPage() {
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Email
           </label>
           <input
@@ -84,7 +87,10 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Password
           </label>
           <input
@@ -101,12 +107,13 @@ export default function LoginPage() {
           onClick={handleLogin}
           disabled={isLoading || isRateLimited}
           className={`w-full py-2 px-4 rounded text-white font-medium
-            ${isLoading || isRateLimited
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-green-600 hover:bg-green-700'
+            ${
+              isLoading || isRateLimited
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700"
             }`}
         >
-          {isLoading ? 'Logging in...' : 'Log In'}
+          {isLoading ? "Logging in..." : "Log In"}
         </button>
       </div>
     </div>

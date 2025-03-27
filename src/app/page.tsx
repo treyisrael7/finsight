@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '../../lib/subabase';
-import MainLayout from '@/components/layout/MainLayout';
-import Link from 'next/link';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "../../lib/subabase";
+import MainLayout from "@/components/layout/MainLayout";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function Home() {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        router.push('/dashboard');
+        router.push("/dashboard");
       }
     };
     checkSession();
@@ -27,8 +27,8 @@ export default function Home() {
           Learn Finance the Fun Way
         </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Master financial literacy through interactive lessons, games, and challenges.
-          Start your journey to financial freedom today!
+          Master financial literacy through interactive lessons, games, and
+          challenges. Start your journey to financial freedom today!
         </p>
         <Link
           href="/learn"
@@ -40,27 +40,34 @@ export default function Home() {
 
       {/* Features Section */}
       <section className="py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Why Choose FinLingo?</h2>
+        <h2 className="text-3xl font-bold text-center mb-12">
+          Why Choose FinLingo?
+        </h2>
         <div className="grid md:grid-cols-3 gap-8">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="text-green-600 text-4xl mb-4">🎮</div>
             <h3 className="text-xl font-semibold mb-2">Gamified Learning</h3>
             <p className="text-gray-600">
-              Learn through interactive exercises, earn points, and track your progress with our engaging gamification system.
+              Learn through interactive exercises, earn points, and track your
+              progress with our engaging gamification system.
             </p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="text-green-600 text-4xl mb-4">📚</div>
-            <h3 className="text-xl font-semibold mb-2">Structured Curriculum</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              Structured Curriculum
+            </h3>
             <p className="text-gray-600">
-              Follow carefully designed learning paths from basic concepts to advanced financial strategies.
+              Follow carefully designed learning paths from basic concepts to
+              advanced financial strategies.
             </p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="text-green-600 text-4xl mb-4">🏆</div>
             <h3 className="text-xl font-semibold mb-2">Achievement System</h3>
             <p className="text-gray-600">
-              Earn badges, maintain streaks, and compete with others on the leaderboard.
+              Earn badges, maintain streaks, and compete with others on the
+              leaderboard.
             </p>
           </div>
         </div>
@@ -68,9 +75,12 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="bg-green-50 rounded-lg p-8 text-center">
-        <h2 className="text-3xl font-bold mb-4">Ready to Start Your Financial Journey?</h2>
+        <h2 className="text-3xl font-bold mb-4">
+          Ready to Start Your Financial Journey?
+        </h2>
         <p className="text-gray-600 mb-6">
-          Join thousands of learners who are already improving their financial literacy with FinLingo.
+          Join thousands of learners who are already improving their financial
+          literacy with FinLingo.
         </p>
         <Link
           href="/signup"

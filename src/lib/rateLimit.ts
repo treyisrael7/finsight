@@ -11,7 +11,8 @@ class RateLimiter {
   constructor() {
     this.attempts = new Map();
     this.maxAttempts = Number(process.env.NEXT_PUBLIC_RATE_LIMIT_MAX) || 5;
-    this.windowMs = Number(process.env.NEXT_PUBLIC_RATE_LIMIT_WINDOW_MS) || 60000;
+    this.windowMs =
+      Number(process.env.NEXT_PUBLIC_RATE_LIMIT_WINDOW_MS) || 60000;
   }
 
   isRateLimited(identifier: string): boolean {
@@ -53,4 +54,4 @@ class RateLimiter {
 }
 
 // Create a singleton instance
-export const rateLimiter = new RateLimiter(); 
+export const rateLimiter = new RateLimiter();

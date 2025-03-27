@@ -1,5 +1,5 @@
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -14,17 +14,28 @@ export default function MainLayout({ children }: MainLayoutProps) {
           <div className="flex justify-between h-16">
             <div className="flex">
               <Link href="/" className="flex items-center">
-                <span className="text-2xl font-bold text-green-600">FinLingo</span>
+                <span className="text-2xl font-bold text-green-600">
+                  FinLingo
+                </span>
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/learn" className="text-gray-700 hover:text-green-600">
+              <Link
+                href="/learn"
+                className="text-gray-700 hover:text-green-600"
+              >
                 Learn
               </Link>
-              <Link href="/leaderboard" className="text-gray-700 hover:text-green-600">
+              <Link
+                href="/leaderboard"
+                className="text-gray-700 hover:text-green-600"
+              >
                 Leaderboard
               </Link>
-              <Link href="/profile" className="text-gray-700 hover:text-green-600">
+              <Link
+                href="/profile"
+                className="text-gray-700 hover:text-green-600"
+              >
                 Profile
               </Link>
             </div>
@@ -47,4 +58,4 @@ export default function MainLayout({ children }: MainLayoutProps) {
       </footer>
     </div>
   );
-} 
+}
