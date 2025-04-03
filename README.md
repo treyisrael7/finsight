@@ -1,23 +1,16 @@
-# FinLingo 🎯💰
+# FinSight 🎯💰
 
 > **Note:** This is currently an in-progress build. Features and functionality are being actively developed.
 
-FinLingo is a gamified platform for learning financial literacy, inspired by Duolingo. Make learning about money fun and engaging!
+FinSight is an interactive chatbot designed to provide personalized financial advice and insights. Get instant answers to your financial questions and make informed decisions about your portfolio!
 
 ## Features
 
-Currently Implemented:
+Planned Implementations:
 
-- 📱 Mobile-responsive design
-- 📚 Basic learning interface
-- 🎯 Simple progress tracking
-
-Planned Features:
-
-- 🎮 More interactive learning exercises
-- 🏆 Achievement system
-- 👥 Social features and leaderboards
-- 📈 Advanced progress analytics
+- 💬 Interactive chatbot for financial advice
+- 📈 Portfolio insights and recommendations
+- 📚 Access to financial resources and articles
 
 ## Tech Stack
 
@@ -49,17 +42,3 @@ Planned Features:
 ## Project Structure
 
 ```
-src/
-├── app/              # Next.js app router pages
-├── components/       # Reusable UI components
-├── lib/             # Utility functions and configurations
-└── types/           # TypeScript type definitions
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-MIT

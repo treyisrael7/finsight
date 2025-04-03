@@ -22,69 +22,70 @@ export default function Home() {
   return (
     <MainLayout>
       {/* Hero Section */}
-      <section className="text-center py-20">
-        <h1 className="text-5xl font-bold text-gray-900 mb-6">
-          Learn Finance the Fun Way
-        </h1>
-        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Master financial literacy through interactive lessons, games, and
-          challenges. Start your journey to financial freedom today!
+      <section className="text-center py-20 bg-gradient-to-r from-emerald-500 to-blue-500 text-white">
+        <h1 className="text-5xl font-bold mb-6">Meet FinSight</h1>
+        <p className="text-xl mb-8 max-w-2xl mx-auto">
+          Your intelligent chatbot advisor for smarter portfolio decisions.
         </p>
         <Link
-          href="/learn"
-          className="bg-green-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors"
+          href="/chat"
+          className="bg-white text-emerald-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition"
         >
-          Start Learning
+          Start Chatting
         </Link>
       </section>
 
       {/* Features Section */}
-      <section className="py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">
-          Why Choose FinLingo?
+      <section className="py-16 bg-white">
+        <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+          Why Use My Chatbot?
         </h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="text-green-600 text-4xl mb-4">🎮</div>
-            <h3 className="text-xl font-semibold mb-2">Gamified Learning</h3>
-            <p className="text-gray-600">
-              Learn through interactive exercises, earn points, and track your
-              progress with our engaging gamification system.
-            </p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="text-green-600 text-4xl mb-4">📚</div>
-            <h3 className="text-xl font-semibold mb-2">
-              Structured Curriculum
+        <div className="grid md:grid-cols-3 gap-8 px-6">
+          <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition border border-gray-200">
+            <div className="text-emerald-500 text-4xl mb-4">💬</div>
+            <h3 className="text-xl font-semibold mb-2 text-gray-800">
+              Instant Advice
             </h3>
             <p className="text-gray-600">
-              Follow carefully designed learning paths from basic concepts to
-              advanced financial strategies.
+              Get immediate answers to your financial questions and advice
+              tailored to your needs.
             </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="text-green-600 text-4xl mb-4">🏆</div>
-            <h3 className="text-xl font-semibold mb-2">Achievement System</h3>
+          <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition border border-gray-200">
+            <div className="text-blue-500 text-4xl mb-4">📈</div>
+            <h3 className="text-xl font-semibold mb-2 text-gray-800">
+              Portfolio Insights
+            </h3>
             <p className="text-gray-600">
-              Earn badges, maintain streaks, and compete with others on the
-              leaderboard.
+              Receive insights and recommendations based on your current
+              portfolio and financial goals.
+            </p>
+          </div>
+          <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition border border-gray-200">
+            <div className="text-purple-500 text-4xl mb-4">🔍</div>
+            <h3 className="text-xl font-semibold mb-2 text-gray-800">
+              Personalized Learning
+            </h3>
+            <p className="text-gray-600">
+              Learn about financial concepts through interactive conversations
+              and tailored resources.
             </p>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="bg-green-50 rounded-lg p-8 text-center">
+      <section className="bg-gradient-to-r from-emerald-500 to-blue-500 rounded-lg p-10 text-center text-white mt-10 mx-6">
         <h2 className="text-3xl font-bold mb-4">
-          Ready to Start Your Financial Journey?
+          Ready to Enhance Your Financial Knowledge?
         </h2>
-        <p className="text-gray-600 mb-6">
-          Join thousands of learners who are already improving their financial
-          literacy with FinLingo.
+        <p className="mb-6">
+          Join our community and start chatting with your personal financial
+          advisor today!
         </p>
         <Link
           href="/signup"
-          className="bg-green-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors"
+          className="bg-white text-emerald-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition"
         >
           Sign Up Now
         </Link>

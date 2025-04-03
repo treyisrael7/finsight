@@ -15,22 +15,22 @@ export default function MainLayout({ children }: MainLayoutProps) {
             <div className="flex">
               <Link href="/" className="flex items-center">
                 <span className="text-2xl font-bold text-green-600">
-                  FinLingo
+                  FinSight
                 </span>
               </Link>
             </div>
             <div className="flex items-center space-x-4">
               <Link
-                href="/learn"
+                href="/chat"
                 className="text-gray-700 hover:text-green-600"
               >
-                Learn
+                Chatbot
               </Link>
               <Link
-                href="/leaderboard"
+                href="/resources"
                 className="text-gray-700 hover:text-green-600"
               >
-                Leaderboard
+                Resources
               </Link>
               <Link
                 href="/profile"
@@ -52,7 +52,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <footer className="bg-gray-50">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           <div className="text-center text-gray-500">
-            <p>© {new Date().getFullYear()} FinLingo. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} FinSight. All rights reserved.</p>
           </div>
         </div>
       </footer>

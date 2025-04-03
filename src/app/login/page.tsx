@@ -54,7 +54,7 @@ export default function LoginPage() {
 
   return (
     <div className="max-w-sm mx-auto mt-16 p-6 border rounded">
-      <h1 className="text-xl font-bold mb-4">Login to FinLingo</h1>
+      <h1 className="text-xl font-bold mb-4">Login to FinSight</h1>
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded mb-4">
