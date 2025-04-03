@@ -112,9 +112,10 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
         onClick={handleSignup}
         disabled={isLoading || isRateLimited}
         className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white 
-          ${isLoading || isRateLimited
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700"
+          ${
+            isLoading || isRateLimited
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700"
           }`}
       >
         {isLoading ? (

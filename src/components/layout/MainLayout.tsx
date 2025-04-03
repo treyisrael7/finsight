@@ -29,9 +29,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <motion.header
         className="backdrop-blur-md bg-white/70 border-b border-gray-200/20 sticky top-0 z-50"
         initial={{ opacity: 0, y: -20 }}
-        animate={{ 
+        animate={{
           opacity: 1,
-          y: hidden ? -100 : 0
+          y: hidden ? -100 : 0,
         }}
         transition={{ duration: 0.3 }}
       >
@@ -69,8 +69,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
       </motion.header>
 
       {/* Main Content */}
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
+      <main className="flex-grow bg-[var(--background)]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {children}
+        </div>
       </main>
 
       {/* Footer */}
