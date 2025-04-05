@@ -24,21 +24,34 @@ export default function Home() {
     <MainLayout>
       {/* Hero Section */}
       <motion.section
-        className="text-center py-20 bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)] relative"
+        className="relative text-center py-20 bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)] overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-4xl md:text-5xl font-bold mb-6">Meet FinSight</h1>
-        <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-          Your intelligent chatbot advisor for smarter portfolio decisions.
-        </p>
-        <Link
-          href="/chat"
-          className="bg-white text-emerald-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-200 transition"
-        >
-          Start Chatting
-        </Link>
+        {/* Background Glow (optional soft blur) */}
+        <div className="absolute inset-0 bg-white/10 blur-2xl opacity-20 pointer-events-none z-0" />
+
+        {/* Mascot Image */}
+        <img
+          src="/images/cool stock image.svg"
+          alt="FinSight mascot"
+          className="absolute right-8 bottom-4 w-32 md:w-44 lg:w-56 opacity-90 drop-shadow-md hidden md:block z-10"
+        />
+
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-2xl mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">Meet FinSight</h1>
+          <p className="text-lg md:text-xl mb-8">
+            Your intelligent chatbot advisor for smarter portfolio decisions.
+          </p>
+          <Link
+            href="/chat"
+            className="bg-white text-emerald-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-200 transition"
+          >
+            Start Chatting
+          </Link>
+        </div>
       </motion.section>
 
       {/* Features Section */}

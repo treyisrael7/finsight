@@ -39,7 +39,6 @@ export default function ChatPage() {
 
     checkAuth();
 
-    // Set up auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -53,7 +52,6 @@ export default function ChatPage() {
     };
   }, [router]);
 
-  // Show loading state while checking auth
   if (authStatus === "loading") {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -72,7 +70,6 @@ export default function ChatPage() {
     );
   }
 
-  // Don't render anything if not authenticated
   if (authStatus === "unauthenticated") {
     return null;
   }
@@ -96,71 +93,92 @@ export default function ChatPage() {
     setInput("");
     setIsLoading(true);
 
-    // TODO: Add actual API call here
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: input.trim() }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get response');
+      }
+
+      const data = await response.json();
+      
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content:
-          "This is a placeholder response. The actual AI integration will be implemented soon.",
+        content: data.content,
+        isUser: false,
+        timestamp: new Date(data.timestamp),
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I apologize, but I encountered an error. Please try again.",
         isUser: false,
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, botMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Minimal Top Bar */}
-      <div className="backdrop-blur-md bg-white/70 border-b border-gray-200/20 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={handleBackToDashboard}
-                className="flex items-center text-gray-600 hover:text-emerald-500 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                <span>Back to Dashboard</span>
-              </button>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setMessages([])}
-                className="text-sm text-gray-600 hover:text-emerald-500 transition-colors"
-              >
-                Clear Chat
-              </button>
-              <Link
-                href="/resources"
-                className="text-sm text-gray-600 hover:text-emerald-500 transition-colors"
-              >
-                Resources
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Chat Container */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-300 via-gray-100 to-gray-400">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-5xl mx-auto px-4 py-6"
+        className="max-w-5xl mx-auto h-screen flex flex-col bg-white/70 backdrop-blur-xl shadow-2xl border-t border-b border-white/40"
       >
-        <div className="flex flex-col h-[calc(100vh-5rem)] bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
-          {/* Chat Header */}
-          <div className="px-6 py-4 bg-gradient-to-r from-emerald-500 to-blue-500 text-white">
-            <h1 className="text-2xl font-bold mb-1">Chat with FinSight</h1>
-            <p className="text-white/90 text-sm">
-              Your AI financial advisor is ready to help
-            </p>
+        {/* Top Bar */}
+        <div className="px-6 py-4 border-b border-white/30 flex items-center justify-between bg-white/40 backdrop-blur-md z-10">
+          <button
+            onClick={handleBackToDashboard}
+            className="flex items-center text-gray-700 hover:text-emerald-500 transition"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            <span>Back to Dashboard</span>
+          </button>
+          <div className="flex items-center gap-4 text-sm text-gray-700">
+            <button
+              onClick={() => setMessages([])}
+              className="hover:text-emerald-500 transition"
+            >
+              Clear Chat
+            </button>
+            <Link
+              href="/resources"
+              className="hover:text-emerald-500 transition"
+            >
+              Resources
+            </Link>
           </div>
+        </div>
 
-          {/* Welcome Message */}
-          {messages.length === 0 && (
-            <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-b from-white to-gray-50">
+        {/* Chat Header */}
+        <div className="px-6 py-4 bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 text-white shadow-inner">
+          <h1 className="text-2xl font-bold mb-1">💬 Chat with FinSight</h1>
+          <p className="text-white/90 text-sm">
+            Your AI financial advisor is ready to help
+          </p>
+        </div>
+
+        {/* Chat Content */}
+        <div className="flex-1 overflow-y-auto">
+          {messages.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="h-full flex items-center justify-center px-6"
+            >
               <div className="max-w-md text-center">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
                   Welcome to FinSight Chat! 👋
@@ -174,36 +192,34 @@ export default function ChatPage() {
                     "Tell me about investing basics",
                     "How to create a budget?",
                     "Explain market trends",
-                  ].map((suggestion) => (
-                    <button
+                  ].map((suggestion, index) => (
+                    <motion.button
                       key={suggestion}
-                      onClick={() => {
-                        setInput(suggestion);
-                      }}
-                      className="px-4 py-2 bg-white rounded-full text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 border border-gray-200 transition-colors"
+                      onClick={() => setInput(suggestion)}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="px-4 py-2 bg-white rounded-full text-sm text-gray-700 hover:bg-emerald-100 hover:text-emerald-700 border border-gray-200 shadow-sm transition-all"
                     >
                       {suggestion}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Messages */}
-          {messages.length > 0 && (
+            </motion.div>
+          ) : (
             <MessageList messages={messages} isLoading={isLoading} />
           )}
+        </div>
 
-          {/* Input Area */}
-          <div className="border-t border-gray-200 bg-white p-4">
-            <ChatInput
-              input={input}
-              setInput={setInput}
-              onSubmit={handleSubmit}
-              isLoading={isLoading}
-            />
-          </div>
+        {/* Chat Input */}
+        <div className="border-t border-gray-200 bg-white/60 px-4 py-3">
+          <ChatInput
+            input={input}
+            setInput={setInput}
+            onSubmit={handleSubmit}
+            isLoading={isLoading}
+          />
         </div>
       </motion.div>
     </div>

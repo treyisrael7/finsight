@@ -29,21 +29,25 @@ export default function LoginPage() {
 
         <LoginForm onSuccess={handleLoginSuccess} />
 
-        <div className="text-center space-y-4">
+        <div className="text-center">
           <Link
             href="/signup"
-            className="block text-sm text-teal-600 hover:text-teal-500 transition-colors"
+            className="text-sm text-teal-600 hover:text-teal-500 transition-colors"
           >
             Don't have an account? Sign up
           </Link>
-          <Link
-            href="/"
-            className="block text-sm text-gray-600 hover:text-teal-500 transition-colors"
-          >
-            ← Back to Home
-          </Link>
         </div>
       </motion.div>
+
+      {/* Back to Home (separated) */}
+      <div className="mt-6 text-sm">
+        <Link
+          href="/"
+          className="text-gray-500 hover:text-teal-500 transition-colors"
+        >
+          ← Back to Home
+        </Link>
+      </div>
     </div>
   );
 }
