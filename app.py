@@ -1,13 +1,11 @@
 import gradio as gr
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import torch
-from pathlib import Path
 
 # Load model and tokenizer
 print("Loading model and tokenizer...")
-model_path = "./fine_tuned_model/results/checkpoint-186"
 tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-model = GPT2LMHeadModel.from_pretrained(model_path)
+model = GPT2LMHeadModel.from_pretrained("gpt2")
 
 # Set device
 device = "cuda" if torch.cuda.is_available() else "cpu"

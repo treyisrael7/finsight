@@ -71,3 +71,9 @@ logs/
 *.swp
 *.swo
 *~
+
+# New additions from the code block
+*.pyc
+*.pyo
+*.pyd
+*.safetensors
