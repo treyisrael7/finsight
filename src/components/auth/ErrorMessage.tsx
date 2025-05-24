@@ -12,8 +12,8 @@ export default function ErrorMessage({
   messages,
 }: ErrorMessageProps) {
   const styles = {
-    error: "bg-red-50 border-l-4 border-red-400 text-red-700",
-    warning: "bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700",
+    error: "bg-destructive/10 border-l-4 border-destructive text-destructive",
+    warning: "bg-yellow-100 dark:bg-yellow-900/20 border-l-4 border-yellow-400 dark:border-yellow-600 text-yellow-700 dark:text-yellow-200",
   };
 
   return (

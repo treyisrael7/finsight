@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { Message } from "@/types/chat";
+import { Message } from '@/types/chat';
+import { motion } from 'framer-motion';
 
 interface ChatMessageProps {
   message: Message;
@@ -13,18 +13,18 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}
     >
       <div
-        className={`max-w-[80%] p-4 ${
+        className={`max-w-[80%] rounded-lg p-4 ${
           message.isUser
-            ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-2xl rounded-br-none shadow-lg"
-            : "bg-white border border-gray-200 text-gray-800 rounded-2xl rounded-bl-none shadow-sm"
+            ? "bg-emerald-500 text-white"
+            : "bg-white shadow-md"
         }`}
       >
-        <p className="text-[15px] leading-relaxed">{message.content}</p>
-        <span
-          className={`text-xs mt-2 block ${message.isUser ? "text-teal-100" : "text-gray-500"}`}
-        >
-          {message.timestamp.toLocaleTimeString()}
-        </span>
+        <p className={message.isUser ? "text-white" : "text-gray-800"}>
+          {message.content}
+        </p>
+        <div className="mt-1 text-xs opacity-50">
+          {new Date(message.timestamp).toLocaleTimeString()}
+        </div>
       </div>
     </motion.div>
   );

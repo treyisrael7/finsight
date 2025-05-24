@@ -1,17 +1,21 @@
+"use client";
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { validatePassword } from "@/lib/validation";
 import { rateLimiter } from "@/lib/rateLimit";
-import { supabase } from "../../../lib/supabase";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import ErrorMessage from "./ErrorMessage";
 import FormInput from "./FormInput";
 import LoadingSpinner from "./LoadingSpinner";
+import { toast } from "react-hot-toast";
 
 interface SignupFormProps {
   onSuccess: () => void;
+  isDarkMode?: boolean;
 }
 
-export default function SignupForm({ onSuccess }: SignupFormProps) {
+export default function SignupForm({ onSuccess, isDarkMode = false }: SignupFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -19,6 +23,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const supabase = createClientComponentClient();
 
   const handleSignup = async () => {
     setIsLoading(true);
@@ -57,7 +62,13 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
         setError(error.message);
       } else {
         rateLimiter.reset(email);
-        onSuccess();
+        toast.success('Please check your email for a confirmation link!', {
+          duration: 5000,
+          position: 'top-center',
+        });
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again later.");
@@ -86,6 +97,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
         placeholder="Enter your email"
         onChange={setEmail}
         disabled={isRateLimited}
+        isDarkMode={isDarkMode}
       />
 
       <FormInput
@@ -95,6 +107,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
         placeholder="Create a password"
         onChange={setPassword}
         disabled={isRateLimited}
+        isDarkMode={isDarkMode}
       />
 
       <FormInput
@@ -104,6 +117,7 @@ export default function SignupForm({ onSuccess }: SignupFormProps) {
         placeholder="Confirm your password"
         onChange={setConfirmPassword}
         disabled={isRateLimited}
+        isDarkMode={isDarkMode}
       />
 
       <motion.button
