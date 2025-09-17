@@ -72,7 +72,8 @@ export default function PersonalInfo({ isEditing, formData, onFormChange }: Pers
                 type="text"
                 value={formData.full_name}
                 onChange={(e) => onFormChange('full_name', e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground focus:border-teal-500 focus:ring-2 focus:ring-teal-200 dark:focus:ring-teal-900/20 transition-colors"
+                className={`w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground focus:border-teal-500 focus:ring-2 focus:ring-teal-200 dark:focus:ring-teal-900/20 transition-colors
+                  ${isDarkMode ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-900'}`}
                 placeholder="Enter your name"
                 required
                 minLength={2}
@@ -97,7 +98,8 @@ export default function PersonalInfo({ isEditing, formData, onFormChange }: Pers
             <select
               value={formData.risk_profile}
               onChange={(e) => onFormChange('risk_profile', e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground focus:border-teal-500 focus:ring-2 focus:ring-teal-200 dark:focus:ring-teal-900/20 transition-colors"
+              className={`w-full px-4 py-2.5 rounded-lg border border-border bg-background text-foreground focus:border-teal-500 focus:ring-2 focus:ring-teal-200 dark:focus:ring-teal-900/20 transition-colors
+                ${isDarkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'}`}
               required
             >
               <option value="">Select your risk tolerance</option>

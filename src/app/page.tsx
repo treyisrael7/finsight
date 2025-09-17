@@ -106,7 +106,7 @@ export default function Home() {
           >
             <Link
               href="/login"
-              className="group bg-white/10 backdrop-blur-sm text-white border border-white/20 px-6 py-2 rounded-lg text-base font-semibold hover:bg-white/20 transition flex items-center gap-2"
+              className="group bg-white/20 backdrop-blur-sm text-white border border-white/30 px-6 py-2 rounded-lg text-base font-semibold hover:bg-white/20 transition flex items-center gap-2"
             >
               Login
               <motion.div
@@ -300,9 +300,9 @@ export default function Home() {
                 description: "Your AI guide learns your style and adapts to how you think about money.",
               },
               {
-                icon: <BookOpen className="w-6 h-6" />,
-                title: "Structured Learning",
-                description: "Access curated resources and guides to build your financial knowledge step by step.",
+                icon: <TrendingUp className="w-6 h-6" />,
+                title: "Smart Insights",
+                description: "Get personalized financial insights and recommendations based on your goals.",
               },
               {
                 icon: <Shield className="w-6 h-6" />,

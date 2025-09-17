@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MessageSquare, BookOpen, Target, LogOut, User } from "lucide-react";
+import { MessageSquare, Target, LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
@@ -69,55 +69,28 @@ export default function DashboardClient({ user, profile }: DashboardClientProps)
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 text-white p-6 rounded-lg shadow-md mb-8">
-          <h1 className="text-2xl font-bold mb-2">
+        <div className="bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 text-white p-4 rounded-lg shadow-md mb-6">
+          <h1 className="text-xl font-bold mb-1">
             Welcome back, {profile?.full_name || 'User'}!
           </h1>
-          <p className="text-white/90">
+          <p className="text-sm text-white/90">
             Let's continue your financial journey together.
           </p>
         </div>
 
         {/* Main Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Track Your Progress Section */}
-          <TrackProgress isDarkMode={isDarkMode} />
-
-          {/* Learning Resources Section */}
-          <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-md`}>
-            <div className="flex items-center space-x-3 mb-5">
-              <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-teal-900/30' : 'bg-teal-100'}`}>
-                <BookOpen className={`w-5 h-5 ${isDarkMode ? 'text-teal-400' : 'text-teal-600'}`} />
-              </div>
-              <h2 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-                Resources
-              </h2>
-            </div>
-            <div className="space-y-4">
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <h3 className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>
-                  Financial Basics
-                </h3>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
-                  Essential concepts for beginners
-                </p>
-              </div>
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <h3 className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>
-                  Investment Strategies
-                </h3>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
-                  Learn about different approaches
-                </p>
-              </div>
-            </div>
+          <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-md`}>
+            <TrackProgress isDarkMode={isDarkMode} />
           </div>
 
+
           {/* Chat Section */}
-          <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-md`}>
-            <div className="flex items-center space-x-3 mb-5">
+          <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-md`}>
+            <div className="flex items-center space-x-3 mb-4">
               <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-teal-900/30' : 'bg-teal-100'}`}>
                 <MessageSquare className={`w-5 h-5 ${isDarkMode ? 'text-teal-400' : 'text-teal-600'}`} />
               </div>
@@ -125,8 +98,8 @@ export default function DashboardClient({ user, profile }: DashboardClientProps)
                 Chat with AI
               </h2>
             </div>
-            <div className="space-y-4">
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+            <div className="space-y-3">
+              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
                 <h3 className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>
                   Get Personalized Advice
                 </h3>
@@ -134,7 +107,7 @@ export default function DashboardClient({ user, profile }: DashboardClientProps)
                   Ask questions about your finances
                 </p>
               </div>
-              <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
                 <h3 className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>
                   Financial Planning
                 </h3>
@@ -145,7 +118,7 @@ export default function DashboardClient({ user, profile }: DashboardClientProps)
             </div>
             <Link
               href="/chat"
-              className={`mt-6 block w-full text-center py-2 px-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-colors`}
+              className={`mt-4 block w-full text-center py-2 px-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-colors`}
             >
               Start Chat
             </Link>

@@ -47,10 +47,10 @@ export default function ProfileActions({
         className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Dashboard
+        Back
       </button>
 
-      <div className="flex gap-4">
+      <div className="flex items-center space-x-2">
         {isEditing ? (
           <>
             <button

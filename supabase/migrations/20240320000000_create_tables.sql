@@ -2,15 +2,6 @@
 create extension if not exists "uuid-ossp";
 create extension if not exists "pg_cron";
 
--- Add performance-optimizing indexes
-create index if not exists idx_user_profiles_email on public.user_profiles(email);
-create index if not exists idx_user_profiles_created_at on public.user_profiles(created_at);
-create index if not exists idx_conversations_updated_at on public.conversations(updated_at);
-create index if not exists idx_messages_created_at on public.messages(created_at);
-create index if not exists idx_financial_goals_status on public.financial_goals(status);
-create index if not exists idx_budgets_month on public.budgets(month);
-create index if not exists idx_portfolios_risk_level on public.portfolios(risk_level);
-
 -- Audit logs table
 create table if not exists public.audit_logs (
     id uuid default uuid_generate_v4() primary key,
@@ -93,6 +84,15 @@ create table if not exists public.portfolios (
     updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- Add performance-optimizing indexes (AFTER tables are created)
+create index if not exists idx_user_profiles_email on public.user_profiles(email);
+create index if not exists idx_user_profiles_created_at on public.user_profiles(created_at);
+create index if not exists idx_conversations_updated_at on public.conversations(updated_at);
+create index if not exists idx_messages_created_at on public.messages(created_at);
+create index if not exists idx_financial_goals_status on public.financial_goals(status);
+create index if not exists idx_budgets_month on public.budgets(month);
+create index if not exists idx_portfolios_risk_level on public.portfolios(risk_level);
+
 -- Create indexes for better query performance
 create index if not exists idx_conversations_user_id on public.conversations(user_id);
 create index if not exists idx_messages_conversation_id on public.messages(conversation_id);
@@ -131,6 +131,8 @@ drop policy if exists "Users can update own budgets" on public.budgets;
 drop policy if exists "Users can view own portfolios" on public.portfolios;
 drop policy if exists "Users can insert own portfolios" on public.portfolios;
 drop policy if exists "Users can update own portfolios" on public.portfolios;
+drop policy if exists "Users can delete own financial goals" on public.financial_goals;
+drop policy if exists "Service role can manage financial goals" on public.financial_goals;
 
 -- Create RLS policies
 create policy "Users can view own profile"
@@ -212,15 +214,24 @@ create policy "Service role can manage messages"
 -- Add RLS policies for other tables
 create policy "Users can view own financial goals"
     on public.financial_goals for select
-    using (user_id = (select auth.uid()));
+    using (user_id = auth.uid());
 
 create policy "Users can insert own financial goals"
     on public.financial_goals for insert
-    with check (user_id = (select auth.uid()));
+    with check (user_id = auth.uid());
 
 create policy "Users can update own financial goals"
     on public.financial_goals for update
-    using (user_id = (select auth.uid()));
+    using (user_id = auth.uid());
+
+create policy "Users can delete own financial goals"
+    on public.financial_goals for delete
+    using (user_id = auth.uid());
+
+create policy "Service role can manage financial goals"
+    on public.financial_goals
+    using (auth.role() = 'service_role')
+    with check (auth.role() = 'service_role');
 
 create policy "Users can view own budgets"
     on public.budgets for select
@@ -331,4 +342,4 @@ drop trigger if exists update_conversation_timestamp on public.messages;
 create trigger update_conversation_timestamp
     after insert on public.messages
     for each row
-    execute function public.update_conversation_timestamp(); 
+    execute function public.update_conversation_timestamp();

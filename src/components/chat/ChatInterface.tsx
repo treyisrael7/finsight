@@ -8,7 +8,7 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, Send, Loader2 } from 'lucide-react';
+import { ArrowLeft, Send, Loader2, LayoutDashboard, User, BookOpen, Target } from 'lucide-react';
 
 interface ChatInterfaceProps {
   conversationId: string | null;
@@ -175,31 +175,21 @@ export default function ChatInterface({
     <div className={`flex flex-col h-full ${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-lg`}>
       {/* Top Bar */}
       <div className={`px-6 py-4 border-b ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'} flex items-center justify-between z-10`}>
-        <button
-          onClick={handleBackToDashboard}
-          className={`flex items-center ${isDarkMode ? 'text-gray-300 hover:text-emerald-400' : 'text-gray-700 hover:text-emerald-500'} transition`}
-        >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          <span>Back to Dashboard</span>
-        </button>
-        <div className={`flex items-center gap-4 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-          <Link
-            href="/resources"
-            className={`hover:text-emerald-500 transition`}
-          >
-            Resources
+        <div className="flex items-center space-x-8">
+          <Link href="/dashboard" className="text-foreground hover:text-blue-600 transition-colors">
+            <LayoutDashboard className="w-6 h-6" />
           </Link>
-          <Link
-            href="/profile"
-            className={`hover:text-emerald-500 transition`}
-          >
-            Profile
+          <Link href="/goals" className="text-foreground hover:text-blue-600 transition-colors">
+            <Target className="w-6 h-6" />
           </Link>
         </div>
+        <Link href="/profile" className="text-foreground hover:text-blue-600 transition-colors">
+          <User className="w-6 h-6" />
+        </Link>
       </div>
       {/* Chat Header */}
       <div className="px-6 py-4 bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 text-white shadow-inner">
-        <h1 className="text-2xl font-bold mb-1">💬 Chat with FinSight</h1>
+        <h1 className="text-2xl font-bold mb-1">Chat with FinSight</h1>
         <p className="text-white/90 text-sm">
           {conversationId ? 'Your AI financial advisor is ready to help' : 'Start a new conversation'}
         </p>

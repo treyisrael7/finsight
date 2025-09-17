@@ -7,6 +7,8 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import FormInput from "../auth/FormInput";
 import LoadingSpinner from "../auth/LoadingSpinner";
+import { LogOut, User, Bell, Shield, HelpCircle } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 
 interface AccountSettingsProps {
   isDarkMode: boolean;
@@ -71,6 +73,20 @@ export default function AccountSettings({ isDarkMode }: AccountSettingsProps) {
     } catch (error: any) {
       toast.error(error.message || "Failed to delete account");
       setShowDeleteConfirm(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast.error('Failed to sign out');
     } finally {
       setIsLoading(false);
     }
@@ -187,7 +203,7 @@ export default function AccountSettings({ isDarkMode }: AccountSettingsProps) {
                 ? 'text-gray-300 hover:text-teal-400' 
                 : 'text-gray-600 hover:text-teal-500'} transition-colors`}
           >
-            ← Back to Dashboard
+            ← Back
           </motion.button>
         </div>
       </div>

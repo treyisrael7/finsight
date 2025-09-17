@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Target } from "lucide-react";
+import Link from 'next/link';
 
 interface FinancialGoalsProps {
   isEditing: boolean;
@@ -64,13 +65,10 @@ export default function FinancialGoals({ isEditing, goals, onGoalChange }: Finan
     } else {
       switch (term) {
         case 'short_term':
-          // Use bg-orange-200 and text-orange-900 as suggested for better light mode contrast
           return 'bg-orange-200 text-orange-900';
         case 'medium_term':
-          // Use bg-blue-200 and text-blue-900 as suggested for better light mode contrast
           return 'bg-blue-200 text-blue-900';
         default:
-          // Use bg-purple-200 and text-purple-900 as suggested for better light mode contrast
           return 'bg-purple-200 text-purple-900';
       }
     }
@@ -83,12 +81,23 @@ export default function FinancialGoals({ isEditing, goals, onGoalChange }: Finan
   if (isEditing) {
     return (
       <div className={`rounded-xl p-6 ${cardClasses}`}>
-        <div className="flex items-center space-x-3 mb-6">
-          {/* Use client-side dark mode check for icon background and color */}
-          <div className={`p-2 ${isDarkMode ? 'bg-indigo-900' : 'bg-indigo-50'} rounded-lg`}>
-            <Target className={`w-5 h-5 ${isDarkMode ? 'text-indigo-300' : 'text-indigo-600'}`} />
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <div className={`p-2 ${isDarkMode ? 'bg-indigo-900' : 'bg-indigo-50'} rounded-lg`}>
+              <Target className={`w-5 h-5 ${isDarkMode ? 'text-indigo-300' : 'text-indigo-600'}`} />
+            </div>
+            <h3 className="text-lg font-semibold text-foreground">Financial Goals</h3>
           </div>
-          <h3 className="text-lg font-semibold text-foreground">Financial Goals</h3>
+          <Link
+            href="/goals"
+            className={`text-sm font-medium ${
+              isDarkMode 
+                ? 'text-teal-400 hover:text-teal-300' 
+                : 'text-teal-600 hover:text-teal-500'
+            } transition-colors`}
+          >
+            Track Progress
+          </Link>
         </div>
         <div className="space-y-8">
           {(['short_term', 'medium_term', 'long_term'] as const).map((term) => (
@@ -98,36 +107,99 @@ export default function FinancialGoals({ isEditing, goals, onGoalChange }: Finan
                  term === 'medium_term' ? 'Medium Term (3-5 years)' :
                  'Long Term (5+ years)'}
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {goalOptions[term].map(goal => (
-                  <label
-                    key={goal}
-                    className={`relative flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all
-                      ${goals[term].includes(goal)
-                        // Use client-side dark mode check for selected goal background
-                        ? `border-teal-500 ${isDarkMode ? 'bg-teal-900/20' : 'bg-teal-50'}`
-                        : 'border-border hover:border-teal-200 hover:bg-card'}`}
+              
+              {goalOptions[term].map(goal => (
+                <label
+                  key={goal}
+                  className={`relative flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all
+                    ${goals[term].includes(goal)
+                      ? `border-teal-500 ${isDarkMode ? 'bg-teal-900/20' : 'bg-teal-50'}`
+                      : 'border-border hover:border-teal-200 hover:bg-card'}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={goals[term].includes(goal)}
+                    onChange={() => onGoalChange(term, goal)}
+                    className="sr-only"
+                  />
+                  <div className={`flex items-center justify-center w-5 h-5 rounded border mr-3
+                    ${goals[term].includes(goal)
+                      ? 'bg-teal-500 border-teal-500'
+                      : 'border-border'}`}
                   >
+                    {goals[term].includes(goal) && (
+                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-foreground">{goal}</span>
+                </label>
+              ))}
+
+              {/* Show custom goals */}
+              {goals[term].filter(goal => !goalOptions[term].includes(goal)).map(customGoal => (
+                <div
+                  key={customGoal}
+                  className={`relative flex items-center justify-between p-4 rounded-xl border-2 transition-all
+                    border-teal-500 ${isDarkMode ? 'bg-teal-900/20' : 'bg-teal-50'}`}
+                >
+                  <label className="flex items-center cursor-pointer m-0">
                     <input
                       type="checkbox"
-                      checked={goals[term].includes(goal)}
-                      onChange={() => onGoalChange(term, goal)}
+                      checked={goals[term].includes(customGoal)}
+                      onChange={() => onGoalChange(term, customGoal)}
                       className="sr-only"
                     />
-                    <div className={`flex items-center justify-center w-5 h-5 rounded border mr-3
-                      ${goals[term].includes(goal)
-                        ? 'bg-teal-500 border-teal-500'
-                        : 'border-border'}`}
-                    >
-                      {goals[term].includes(goal) && (
-                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
+                    <div className="flex items-center justify-center w-5 h-5 rounded border mr-3 bg-teal-500 border-teal-500">
+                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
                     </div>
-                    <span className="text-sm font-medium text-foreground">{goal}</span>
+                    <span className="text-sm font-medium text-foreground">{customGoal}</span>
                   </label>
-                ))}
+                </div>
+              ))}
+
+              {/* Custom Goal Input */}
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="text"
+                    placeholder="Add custom goal..."
+                    className={`flex-1 px-4 py-2.5 rounded-lg border border-border bg-background text-foreground focus:border-teal-500 focus:ring-2 focus:ring-teal-200 dark:focus:ring-teal-900/20 transition-colors
+                      ${isDarkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const input = e.target as HTMLInputElement;
+                        const value = input.value.trim();
+                        if (value) {
+                          onGoalChange(term, value);
+                          input.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                      const value = input.value.trim();
+                      if (value) {
+                        onGoalChange(term, value);
+                        input.value = '';
+                      }
+                    }}
+                    className={`px-4 py-2.5 rounded-lg ${
+                      isDarkMode 
+                        ? 'bg-teal-600 hover:bg-teal-700 text-white' 
+                        : 'bg-teal-500 hover:bg-teal-600 text-white'
+                    } transition-colors`}
+                  >
+                    Add
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -138,12 +210,23 @@ export default function FinancialGoals({ isEditing, goals, onGoalChange }: Finan
 
   return (
     <div className={`rounded-xl p-6 ${cardClasses}`}>
-      <div className="flex items-center space-x-3 mb-6">
-         {/* Use client-side dark mode check for icon background and color */}
-        <div className={`p-2 ${isDarkMode ? 'bg-primary/10' : 'bg-primary/10'} rounded-lg`}>
-          <Target className={`w-5 h-5 ${isDarkMode ? 'text-primary' : 'text-primary'}`} />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <div className={`p-2 ${isDarkMode ? 'bg-primary/10' : 'bg-primary/10'} rounded-lg`}>
+            <Target className={`w-5 h-5 ${isDarkMode ? 'text-primary' : 'text-primary'}`} />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">Financial Goals</h3>
         </div>
-        <h3 className="text-lg font-semibold text-foreground">Financial Goals</h3>
+        <Link
+          href="/goals"
+          className={`text-sm font-medium ${
+            isDarkMode 
+              ? 'text-teal-400 hover:text-teal-300' 
+              : 'text-teal-600 hover:text-teal-500'
+          } transition-colors`}
+        >
+          Track Progress
+        </Link>
       </div>
       <div className="space-y-8">
         {(['short_term', 'medium_term', 'long_term'] as const).map((term) => (

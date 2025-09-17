@@ -31,7 +31,7 @@ export default function FormInput({
           className={`appearance-none block w-full px-3 py-2.5 border rounded-lg shadow-sm 
                      placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent
                      ${isDarkMode 
-                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                       ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
                        : 'bg-white border-gray-300 text-gray-900'}`}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}

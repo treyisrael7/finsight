@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from "@/types/database";
 import ProfileHeader from "@/components/profile/ProfileHeader";
@@ -11,6 +11,7 @@ import FinancialGoals from "@/components/profile/FinancialGoals";
 import ProfileActions from "@/components/profile/ProfileActions";
 import AccountSettings from "@/components/profile/AccountSettings";
 import { toast } from "react-hot-toast";
+import { X } from "lucide-react";
 
 type Profile = Database['public']['Tables']['user_profiles']['Row'];
 
@@ -31,6 +32,20 @@ export default function ProfilePage() {
       medium_term: [] as string[],
       long_term: [] as string[]
     }
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<{
+    name: string;
+    term: 'short_term' | 'medium_term' | 'long_term';
+  } | null>(null);
+  const [goalProgress, setGoalProgress] = useState<{
+    current: number;
+    target: number;
+    deadline: string;
+  }>({
+    current: 0,
+    target: 0,
+    deadline: new Date().toISOString().split('T')[0]
   });
 
   useEffect(() => {
@@ -190,29 +205,93 @@ export default function ProfilePage() {
     }));
   };
 
-  const handleGoalChange = (term: 'short_term' | 'medium_term' | 'long_term', goal: string) => {
-    setFormData(prev => {
-      const currentGoals = prev.financial_goals[term];
-      const newGoals = currentGoals.includes(goal)
-        ? currentGoals.filter(g => g !== goal)
-        : [...currentGoals, goal];
-      
-      return {
+  const handleGoalChange = async (term: 'short_term' | 'medium_term' | 'long_term', goal: string) => {
+    const isSelected = formData.financial_goals[term].includes(goal);
+    if (!isSelected) {
+      // If selecting a goal, show the modal
+      setSelectedGoal({ name: goal, term });
+      setGoalProgress({
+        current: 0,
+        target: 0,
+        deadline: new Date().toISOString().split('T')[0]
+      });
+      setIsModalOpen(true);
+    } else {
+      // If unselecting a goal, delete it from financial_goals
+      try {
+        const { error } = await supabase
+          .from('financial_goals')
+          .delete()
+          .eq('user_id', profile!.id)
+          .eq('title', goal)
+          .eq('category', term);
+
+        if (error) throw error;
+
+        setFormData(prev => ({
+          ...prev,
+          financial_goals: {
+            ...prev.financial_goals,
+            [term]: prev.financial_goals[term].filter(g => g !== goal)
+          }
+        }));
+      } catch (error) {
+        console.error('Error deleting goal:', error);
+        toast.error('Failed to delete goal');
+      }
+    }
+  };
+
+  const handleSaveGoalProgress = async () => {
+    if (!selectedGoal) return;
+
+    try {
+      // Validate the data
+      if (goalProgress.current < 0 || goalProgress.target <= 0) {
+        toast.error('Please enter valid amounts');
+        return;
+      }
+
+      if (!goalProgress.deadline) {
+        toast.error('Please select a deadline');
+        return;
+      }
+
+      // Add the goal to financial_goals table
+      const { error: insertError } = await supabase
+        .from('financial_goals')
+        .insert({
+          user_id: profile!.id,
+          title: selectedGoal.name,
+          current_amount: Number(goalProgress.current),
+          target_amount: Number(goalProgress.target),
+          deadline: new Date(goalProgress.deadline).toISOString(),
+          category: selectedGoal.term,
+          status: 'active'
+        });
+
+      if (insertError) throw insertError;
+
+      // Update the form data
+      setFormData(prev => ({
         ...prev,
         financial_goals: {
           ...prev.financial_goals,
-          [term]: newGoals
+          [selectedGoal.term]: [...prev.financial_goals[selectedGoal.term], selectedGoal.name]
         }
-      };
-    });
+      }));
+
+      setIsModalOpen(false);
+      setSelectedGoal(null);
+      toast.success('Goal added successfully!');
+    } catch (error: any) {
+      console.error('Error adding goal:', error);
+      toast.error(error.message || 'Failed to add goal');
+    }
   };
 
   const handleBack = () => {
-    if (document.referrer.includes('/chat')) {
-      router.push('/chat');
-    } else {
-      router.push('/dashboard');
-    }
+    router.back();
   };
 
   if (!mounted) {
@@ -331,6 +410,133 @@ export default function ProfilePage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Add Goal Progress Modal */}
+      <AnimatePresence>
+        {isModalOpen && selectedGoal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className={`w-full max-w-md rounded-2xl p-6 ${
+                isDarkMode ? 'bg-gray-800' : 'bg-white'
+              } shadow-xl`}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                  Set Goal Progress
+                </h2>
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className={`p-2 rounded-full hover:bg-gray-200/50 transition-colors ${
+                    isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-1.5 ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Current Amount
+                  </label>
+                  <input
+                    type="number"
+                    value={goalProgress.current || ''}
+                    onChange={(e) => setGoalProgress(prev => ({
+                      ...prev,
+                      current: e.target.value === '' ? 0 : parseFloat(e.target.value)
+                    }))}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      isDarkMode 
+                        ? 'bg-gray-800/50 border-gray-600 text-gray-100' 
+                        : 'bg-white/50 border-gray-300 text-gray-900'
+                    }`}
+                    min="0"
+                    step="100"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-1.5 ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Target Amount
+                  </label>
+                  <input
+                    type="number"
+                    value={goalProgress.target || ''}
+                    onChange={(e) => setGoalProgress(prev => ({
+                      ...prev,
+                      target: e.target.value === '' ? 0 : parseFloat(e.target.value)
+                    }))}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      isDarkMode 
+                        ? 'bg-gray-800/50 border-gray-600 text-gray-100' 
+                        : 'bg-white/50 border-gray-300 text-gray-900'
+                    }`}
+                    min="0"
+                    step="100"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-1.5 ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Deadline
+                  </label>
+                  <input
+                    type="date"
+                    value={goalProgress.deadline}
+                    onChange={(e) => setGoalProgress(prev => ({
+                      ...prev,
+                      deadline: e.target.value
+                    }))}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      isDarkMode 
+                        ? 'bg-gray-800/50 border-gray-600 text-gray-100' 
+                        : 'bg-white/50 border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className={`px-4 py-2 rounded-lg ${
+                      isDarkMode 
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    } transition-colors`}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveGoalProgress}
+                    className="px-4 py-2 rounded-lg bg-teal-500 hover:bg-teal-600 text-white transition-colors"
+                  >
+                    Save Goal
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 } 
