@@ -53,10 +53,7 @@ export default function LoginPage() {
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
-        password,
-        options: {
-          persistSession: rememberMe
-        }
+        password
       });
 
       if (error) {
