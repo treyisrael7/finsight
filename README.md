@@ -30,20 +30,11 @@ A personal finance app I built to track financial goals and get AI-powered finan
    npm install
    ```
 
-2. **Set up environment variables**
-   Create `.env.local`:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-   OPEN_AI_KEY=your_openai_api_key
-   ```
-
-3. **Set up the database**
+2. **Set up the database**
    - Create a Supabase project
    - Run the migration files in your Supabase project dashboard (migrations are not included in this repo for security)
 
-4. **Run it**
+3. **Run it**
    ```bash
    npm run dev
    ```
