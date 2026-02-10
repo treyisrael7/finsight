@@ -4,19 +4,19 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 
 interface NewGoal {
-  name: string;
-  term: 'short_term' | 'medium_term' | 'long_term';
-  target: number;
+  title: string;
+  target_amount: string;
+  current_amount: string;
   deadline: string;
+  category: 'short_term' | 'medium_term' | 'long_term';
 }
 
 interface AddGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAdd: () => void;
-  onAddGoal: () => void;
   newGoal: NewGoal;
-  onNewGoalChange: (field: string, value: string | number) => void;
+  onNewGoalChange: (field: keyof NewGoal, value: string | number) => void;
   isDarkMode: boolean;
 }
 
@@ -24,7 +24,6 @@ export default function AddGoalModal({
   isOpen,
   onClose,
   onAdd,
-  onAddGoal,
   newGoal,
   onNewGoalChange,
   isDarkMode,
@@ -87,7 +86,7 @@ export default function AddGoalModal({
                     </label>
                     <input
                       type="number"
-                      value={newGoal.current_amount}
+                      value={newGoal.current_amount ?? ''}
                       onChange={(e) => onNewGoalChange('current_amount', e.target.value)}
                       className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
                         isDarkMode 
@@ -106,7 +105,7 @@ export default function AddGoalModal({
                     </label>
                     <input
                       type="number"
-                      value={newGoal.target_amount}
+                      value={newGoal.target_amount ?? ''}
                       onChange={(e) => onNewGoalChange('target_amount', e.target.value)}
                       className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
                         isDarkMode 

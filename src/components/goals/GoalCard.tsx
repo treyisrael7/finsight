@@ -152,15 +152,15 @@ export default function GoalCard({
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Current</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatCurrency(goalData.current)}</p>
+              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatCurrency(goalData.current_amount ?? (goalData as any).current ?? 0)}</p>
             </div>
             <div>
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Target</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatCurrency(goalData.target)}</p>
+              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatCurrency(goalData.target_amount ?? (goalData as any).target ?? 0)}</p>
             </div>
             <div>
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Deadline</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatDate(goalData.deadline)}</p>
+              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatDate(goalData.deadline ?? '')}</p>
             </div>
             <div>
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Status</span>

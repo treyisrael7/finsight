@@ -344,7 +344,10 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
               onSaveProgress={handleSaveProgress}
               onCancelEdit={handleCancelEdit}
               onDeleteGoal={handleDeleteGoal}
-              onEditValuesChange={handleEditValuesChange}
+              onEditValuesChange={(field, value) => {
+                const fieldMap = { current: 'current_amount' as const, target: 'target_amount' as const, deadline: 'deadline' as const };
+                handleEditValuesChange(fieldMap[field], value);
+              }}
               formatCurrency={formatCurrency}
               formatDate={formatDate}
             />

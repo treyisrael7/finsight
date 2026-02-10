@@ -10,6 +10,7 @@ export function useProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const supabase = createClientComponentClient<Database>();
 
   useEffect(() => {
     const fetchProfile = async () => {
