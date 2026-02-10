@@ -1,11 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database';
 
-// Debug logging
-console.log('Environment variables check:');
-console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'exists' : 'missing');
-console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'exists' : 'missing');
-console.log('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'exists' : 'missing');
+// Environment variable checks
 
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
   throw new Error('Missing environment variable: NEXT_PUBLIC_SUPABASE_URL');
@@ -87,15 +83,15 @@ export const handleSupabaseError = (error: any) => {
 
 // Helper function to get user profile with caching
 export const getUserProfile = async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return null;
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) return null;
 
   const { data, error } = await supabase
     .from('user_profiles')
     .select('*')
-    .eq('id', session.user.id)
+    .eq('id', user.id)
     .single()
-    .cache(60); // Cache for 60 seconds
+    // Cache removed - not available in this version
 
   if (error) {
     console.error('Error fetching user profile:', error);
@@ -107,13 +103,13 @@ export const getUserProfile = async () => {
 
 // Helper function to update user profile
 export const updateUserProfile = async (updates: Partial<Database['public']['Tables']['user_profiles']['Update']>) => {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error('No session');
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) throw new Error('Not authenticated');
 
   const { data, error } = await supabase
     .from('user_profiles')
     .update(updates)
-    .eq('id', session.user.id)
+    .eq('id', user.id)
     .select()
     .single();
 

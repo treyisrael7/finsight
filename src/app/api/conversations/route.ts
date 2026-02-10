@@ -7,8 +7,6 @@ export const runtime = 'edge';
 
 export async function GET(request: Request) {
   try {
-    console.log('Fetching conversations');
-    
     const supabase = createRouteHandlerClient({ cookies });
     
     // Get the access token from the Authorization header
@@ -20,15 +18,13 @@ export async function GET(request: Request) {
 
     const accessToken = authHeader.split(' ')[1];
     
-    // Verify the session
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    // Verify the user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
     
-    if (sessionError || !session) {
-      console.error('Session error:', sessionError);
+    if (userError || !user) {
+      console.error('User error:', userError);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    console.log('User authenticated:', session.user.id);
 
     // Fetch conversations and their messages
     const { data: conversations, error } = await supabase
@@ -39,15 +35,14 @@ export async function GET(request: Request) {
           id, content, role, created_at, sentiment, confidence
         )
       `)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .order('updated_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching conversations:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 });
     }
 
-    console.log('Conversations fetched:', conversations?.length || 0);
     return NextResponse.json({ conversations });
   } catch (error) {
     console.error('Error in conversations API:', error);

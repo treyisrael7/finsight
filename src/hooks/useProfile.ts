@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/database';
 
 type Profile = Database['public']['Tables']['user_profiles']['Row'];
@@ -14,8 +14,8 @@ export function useProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
           setIsLoading(false);
           return;
         }
@@ -23,7 +23,7 @@ export function useProfile() {
         const { data, error } = await supabase
           .from('user_profiles')
           .select('*')
-          .eq('id', session.user.id)
+          .eq('id', user.id)
           .single();
 
         if (error) throw error;
@@ -37,7 +37,7 @@ export function useProfile() {
     };
 
     fetchProfile();
-  }, []);
+  }, [supabase]);
 
   const getProfileContext = () => {
     if (!profile) return '';

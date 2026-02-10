@@ -8,19 +8,17 @@ type Goal = Database['public']['Tables']['financial_goals']['Row'];
 interface GoalProgressProps {
   isDarkMode: boolean;
   totalProgress: number;
-  activeGoals: number;
-  completedGoals: number;
-  nextMilestone: Goal | undefined;
-  onAddClick: () => void;
+  shortTermProgress: number;
+  mediumTermProgress: number;
+  longTermProgress: number;
 }
 
 export default function GoalProgress({
   isDarkMode,
   totalProgress,
-  activeGoals,
-  completedGoals,
-  nextMilestone,
-  onAddClick,
+  shortTermProgress,
+  mediumTermProgress,
+  longTermProgress,
 }: GoalProgressProps) {
   return (
     <div className={`p-6 rounded-xl ${
@@ -47,45 +45,48 @@ export default function GoalProgress({
           </div>
         </div>
 
-        {/* Goal Stats */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className={`p-4 rounded-lg ${
-            isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
-          }`}>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Active Goals</p>
-            <p className={`text-2xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{activeGoals}</p>
+        {/* Term Progress */}
+        <div className="space-y-4">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-gray-500 dark:text-gray-400">Short Term</span>
+              <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>{shortTermProgress}%</span>
+            </div>
+            <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 rounded-full h-2">
+              <div
+                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${shortTermProgress}%` }}
+              />
+            </div>
           </div>
-          <div className={`p-4 rounded-lg ${
-            isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
-          }`}>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Completed Goals</p>
-            <p className={`text-2xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{completedGoals}</p>
+          
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-gray-500 dark:text-gray-400">Medium Term</span>
+              <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>{mediumTermProgress}%</span>
+            </div>
+            <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 rounded-full h-2">
+              <div
+                className="bg-yellow-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${mediumTermProgress}%` }}
+              />
+            </div>
+          </div>
+          
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-gray-500 dark:text-gray-400">Long Term</span>
+              <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>{longTermProgress}%</span>
+            </div>
+            <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 rounded-full h-2">
+              <div
+                className="bg-purple-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${longTermProgress}%` }}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Next Milestone */}
-        {nextMilestone && (
-          <div className={`p-4 rounded-lg ${
-            isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
-          }`}>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Next Milestone</p>
-            <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{nextMilestone.title}</p>
-            <div className="mt-2">
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-500 dark:text-gray-400">Progress</span>
-                <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>
-                  {Math.round((nextMilestone.current_amount / nextMilestone.target_amount) * 100)}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 rounded-full h-2">
-                <div
-                  className="bg-teal-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(nextMilestone.current_amount / nextMilestone.target_amount) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

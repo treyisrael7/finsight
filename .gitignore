@@ -110,6 +110,10 @@ Thumbs.db
 *.sqlite
 *.db
 
+# Supabase
+supabase/
+*.supabase
+
 # Python (if any Python files remain)
 __pycache__/
 *.py[cod]

@@ -51,13 +51,6 @@ export function calculateTermFromDeadline(deadline: string): 'short_term' | 'med
   const yearsDiff = (deadlineDate.getFullYear() - today.getFullYear()) + 
                    (deadlineDate.getMonth() - today.getMonth()) / 12;
 
-  console.log('Calculating term:', {
-    deadline,
-    today: today.toISOString(),
-    deadlineDate: deadlineDate.toISOString(),
-    yearsDiff
-  });
-
   if (yearsDiff <= 1) {
     return 'short_term';
   } else if (yearsDiff <= 5) {

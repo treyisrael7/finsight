@@ -41,7 +41,7 @@ A personal finance app I built to track financial goals and get AI-powered finan
 
 3. **Set up the database**
    - Create a Supabase project
-   - Run the migration files in `supabase/migrations/` in order
+   - Run the migration files in your Supabase project dashboard (migrations are not included in this repo for security)
 
 4. **Run it**
    ```bash

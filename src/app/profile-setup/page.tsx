@@ -174,7 +174,6 @@ export default function ProfileSetupPage() {
 
       // Calculate the term based on the deadline
       const calculatedTerm = calculateTermFromDeadline(goalProgress.deadline);
-      console.log('Calculated term:', calculatedTerm, 'for deadline:', goalProgress.deadline);
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');

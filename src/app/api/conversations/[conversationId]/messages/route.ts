@@ -10,8 +10,6 @@ export async function GET(
   { params }: { params: { conversationId: string } }
 ) {
   try {
-    console.log('Fetching messages for conversation:', params.conversationId);
-    
     const supabase = createRouteHandlerClient({ cookies });
     
     // Get the access token from the Authorization header
@@ -23,30 +21,26 @@ export async function GET(
 
     const accessToken = authHeader.split(' ')[1];
     
-    // Verify the session
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    // Verify the user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
     
-    if (sessionError || !session) {
-      console.error('Session error:', sessionError);
+    if (userError || !user) {
+      console.error('User error:', userError);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    console.log('User authenticated:', session.user.id);
 
     // First verify the conversation belongs to the user
     const { data: conversation, error: conversationError } = await supabase
       .from('conversations')
       .select('id')
       .eq('id', params.conversationId)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .single();
 
     if (conversationError || !conversation) {
       console.error('Conversation error:', conversationError);
       return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
     }
-
-    console.log('Conversation verified:', conversation.id);
 
     // Fetch messages for the conversation
     const { data: messages, error } = await supabase
@@ -57,10 +51,9 @@ export async function GET(
 
     if (error) {
       console.error('Error fetching messages:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 });
     }
 
-    console.log('Messages fetched:', messages?.length || 0);
     return NextResponse.json({ messages });
   } catch (error) {
     console.error('Error in messages API:', error);

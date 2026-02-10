@@ -31,10 +31,17 @@ export async function middleware(req: NextRequest) {
 
     // If trying to access dashboard or other protected routes, check profile completion
     if (path === '/dashboard' || path.startsWith('/chat')) {
+      // Use getUser() to securely get authenticated user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        const redirectUrl = new URL('/login', req.url);
+        return NextResponse.redirect(redirectUrl);
+      }
+
       const { data: profile } = await supabase
         .from('user_profiles')
         .select('full_name, risk_profile, financial_goals')
-        .eq('id', session.user.id)
+        .eq('id', user.id)
         .single();
 
       // If profile is not complete, redirect to profile setup

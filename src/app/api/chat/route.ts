@@ -20,8 +20,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_KEY,
 });
 
-// Add debug logging for OpenAI key
-console.log('OpenAI API Key:', process.env.OPEN_AI_KEY ? 'exists' : 'missing');
+// OpenAI API key is loaded from environment variables
 
 export async function POST(request: Request) {
   try {
@@ -90,8 +89,26 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validate message is a string
+    if (typeof message !== 'string') {
+      return NextResponse.json(
+        { error: 'Invalid message format' },
+        { status: 400 }
+      );
+    }
+
+    // Sanitize message: trim whitespace and remove control characters
+    const sanitizedMessage = message.trim().replace(/[\x00-\x1F\x7F]/g, '');
+
     // Validate message length to prevent abuse (HEAVY LIMIT)
-    if (message.length > 500) {
+    if (sanitizedMessage.length === 0) {
+      return NextResponse.json(
+        { error: 'Message cannot be empty' },
+        { status: 400 }
+      );
+    }
+
+    if (sanitizedMessage.length > 500) {
       return NextResponse.json(
         { error: 'Message too long. Please keep messages under 500 characters.' },
         { status: 400 }
@@ -160,6 +177,31 @@ Guidelines for your responses:
 
 Remember: You're having a natural conversation, not writing a formal report. Keep your responses flowing and engaging, like you're talking to a friend.
 `;
+
+    // Validate conversationId if provided
+    if (conversationId) {
+      if (typeof conversationId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(conversationId)) {
+        return NextResponse.json(
+          { error: 'Invalid conversation ID format' },
+          { status: 400 }
+        );
+      }
+      
+      // Verify conversation belongs to user
+      const { data: convCheck, error: convCheckError } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('id', conversationId)
+        .eq('user_id', user.id)
+        .single();
+      
+      if (convCheckError || !convCheck) {
+        return NextResponse.json(
+          { error: 'Conversation not found or access denied' },
+          { status: 404 }
+        );
+      }
+    }
 
     // Get or create conversation
     let currentConversationId = conversationId;
@@ -232,7 +274,7 @@ Remember: You're having a natural conversation, not writing a formal report. Kee
       })),
       {
         role: 'user',
-        content: message
+        content: sanitizedMessage
       }
     ];
 
@@ -253,7 +295,7 @@ Remember: You're having a natural conversation, not writing a formal report. Kee
         {
           conversation_id: currentConversationId,
           role: 'user',
-          content: message,
+          content: sanitizedMessage,
           sentiment: null,
           confidence: null,
           metadata: {}

@@ -5,11 +5,11 @@ import ChatClient from './ChatClient';
 
 export default async function ChatPage() {
   const supabase = createServerComponentClient({ cookies });
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user }, error } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (error || !user) {
     redirect('/login');
   }
 
-  return <ChatClient user={session.user} />;
+  return <ChatClient user={user} />;
 }

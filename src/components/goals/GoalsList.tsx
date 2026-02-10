@@ -6,7 +6,7 @@ import AddGoalModal from './AddGoalModal';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import type { Database } from '@/types/supabase';
 import { toast } from 'react-hot-toast';
-import { calculateTermFromDeadline } from './utils';
+import { calculateTermFromDeadline, calculateProgress, formatCurrency, formatDate } from './utils';
 
 interface Goal {
   id: string;
@@ -58,8 +58,6 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
 
       if (progressError) throw progressError;
       
-      console.log('Fetched progress:', progress);
-      
       // Organize goals by category
       const organizedGoals = {
         short_term: [] as Goal[],
@@ -70,7 +68,6 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
       progress?.forEach(goal => {
         if (goal.category) {
           const category = goal.category as keyof typeof organizedGoals;
-          console.log('Processing goal:', goal.goal_name, 'Category:', category);
           organizedGoals[category].push({
             id: goal.id,
             user_id: goal.user_id,
@@ -86,7 +83,6 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
         }
       });
       
-      console.log('Organized goals:', organizedGoals);
       setGoals(organizedGoals);
     } catch (error) {
       console.error('Error fetching goals:', error);
@@ -120,15 +116,29 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
         return;
       }
 
+      // Validate amounts
+      const targetAmount = Number(newGoal.target_amount);
+      const currentAmount = newGoal.current_amount.trim() ? Number(newGoal.current_amount) : 0;
+      
+      if (isNaN(targetAmount) || targetAmount <= 0) {
+        toast.error('Please enter a valid target amount greater than 0');
+        return;
+      }
+      
+      if (isNaN(currentAmount) || currentAmount < 0) {
+        toast.error('Please enter a valid current amount (must be 0 or greater)');
+        return;
+      }
+      
+      // Validate deadline is in the future
+      const deadlineDate = new Date(newGoal.deadline);
+      if (deadlineDate < new Date()) {
+        toast.error('Please select a future date for the deadline');
+        return;
+      }
+      
       // Calculate the term based on the deadline
       const calculatedTerm = calculateTermFromDeadline(newGoal.deadline);
-      console.log('Adding new goal:', {
-        title: newGoal.title,
-        deadline: newGoal.deadline,
-        calculatedTerm,
-        target_amount: Number(newGoal.target_amount),
-        current_amount: newGoal.current_amount.trim() ? Number(newGoal.current_amount) : 0
-      });
       
       // Check if goal with same name already exists
       const { data: existingGoal, error: checkError } = await supabase
@@ -139,7 +149,6 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
         .single();
 
       if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-        console.error('Error checking for existing goal:', checkError);
         throw checkError;
       }
 
@@ -149,13 +158,13 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
       }
       
       // Add to goal_progress table
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('goal_progress')
         .insert({
           user_id: userId,
-          goal_name: newGoal.title,
-          target_amount: Number(newGoal.target_amount),
-          current_amount: newGoal.current_amount.trim() ? Number(newGoal.current_amount) : 0,
+          goal_name: newGoal.title.trim(),
+          target_amount: targetAmount,
+          current_amount: currentAmount,
           deadline: newGoal.deadline,
           category: calculatedTerm,
           status: 'active'
@@ -164,7 +173,6 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
         .single();
 
       if (error) {
-        console.error('Error inserting goal:', error);
         if (error.code === '23505') { // Unique violation
           toast.error('A goal with this name already exists');
         } else {
@@ -172,8 +180,6 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
         }
         return;
       }
-
-      console.log('Inserted goal:', data);
 
       // Update user_profiles table to include the new goal
       const { data: profile, error: profileError } = await supabase
@@ -183,7 +189,6 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
         .single();
 
       if (profileError) {
-        console.error('Error fetching profile:', profileError);
         throw profileError;
       }
 
@@ -206,7 +211,6 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
           .eq('id', userId);
 
         if (updateError) {
-          console.error('Error updating profile goals:', updateError);
           throw updateError;
         }
       }
@@ -251,8 +255,31 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
     try {
       if (!editingGoal) return;
 
+      // Validate amounts
+      if (!editingGoal.target_amount || editingGoal.target_amount <= 0) {
+        toast.error('Please enter a valid target amount greater than 0');
+        return;
+      }
+      
+      if (editingGoal.current_amount < 0) {
+        toast.error('Current amount cannot be negative');
+        return;
+      }
+      
+      // Validate deadline
+      if (!editingGoal.deadline) {
+        toast.error('Please select a deadline');
+        return;
+      }
+      
+      const deadlineDate = new Date(editingGoal.deadline);
+      if (isNaN(deadlineDate.getTime())) {
+        toast.error('Please enter a valid date');
+        return;
+      }
+
       // Recalculate the term based on the new deadline
-      const calculatedTerm = calculateTermFromDeadline(editingGoal.deadline || '');
+      const calculatedTerm = calculateTermFromDeadline(editingGoal.deadline);
 
       const { error } = await supabase
         .from('goal_progress')
@@ -303,14 +330,23 @@ export function GoalsList({ userId, onGoalsUpdate, isDarkMode }: GoalsListProps)
           {categoryGoals.map((goal) => (
             <GoalCard
               key={goal.id}
-              goal={goal}
-              onEditClick={handleEditClick}
+              goal={goal.title}
+              progress={calculateProgress(goal.current_amount, goal.target_amount || 0)}
+              goalData={goal}
+              isEditing={editingGoal?.id === goal.id}
+              editValues={editingGoal?.id === goal.id ? {
+                current: goal.current_amount,
+                target: goal.target_amount || 0,
+                deadline: goal.deadline || ''
+              } : null}
+              isDarkMode={isDarkMode}
+              onEditClick={(goalId) => handleEditClick(goal)}
               onSaveProgress={handleSaveProgress}
               onCancelEdit={handleCancelEdit}
               onDeleteGoal={handleDeleteGoal}
               onEditValuesChange={handleEditValuesChange}
-              editingGoal={editingGoal}
-              isDarkMode={isDarkMode}
+              formatCurrency={formatCurrency}
+              formatDate={formatDate}
             />
           ))}
         </div>

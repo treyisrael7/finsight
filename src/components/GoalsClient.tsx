@@ -4,16 +4,12 @@ import { useEffect, useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LayoutDashboard, User, BookOpen, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, User, MessageSquare } from 'lucide-react';
 import type { Database } from '@/types/supabase';
 import { GoalsList } from './goals/GoalsList';
 import GoalsHeader from './goals/GoalsHeader';
 import GoalProgress from './goals/GoalProgress';
-import { useGoals } from './goals/useGoals';
-import { formatCurrency, formatDate, calculateProgress } from './goals/utils';
 import { toast } from 'react-hot-toast';
-import { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface ProfileGoal {
   short_term: string[];
@@ -30,34 +26,19 @@ interface GoalProgress {
 }
 
 interface GoalsClientProps {
-  userData: SupabaseUser;
-  profileData: { financial_goals: any; } | null;
-  progressData: any[];
+  userData?: any;
+  profileData?: { financial_goals: any; } | null;
+  progressData?: any[];
 }
 
-export default function GoalsClient({ userData, profileData, progressData }: GoalsClientProps) {
+export default function GoalsClient(props: GoalsClientProps = {}) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [goals, setGoals] = useState<ProfileGoal | null>(null);
   const [goalProgress, setGoalProgress] = useState<GoalProgress>({});
-  const pathname = usePathname();
   const supabase = createClientComponentClient<Database>();
-
-  const {
-    isAddModalOpen,
-    setIsAddModalOpen,
-    handleAddGoal,
-    handleEditClick,
-    handleSaveProgress,
-    handleCancelEdit,
-    handleDeleteGoal,
-    handleEditValuesChange,
-    handleNewGoalChange,
-    newGoal,
-    fetchGoals: fetchGoalsFromHook
-  } = useGoals(userId || '', supabase);
 
   // Handle theme hydration
   useEffect(() => {
@@ -66,20 +47,16 @@ export default function GoalsClient({ userData, profileData, progressData }: Goa
 
   useEffect(() => {
     async function getUserSession() {
-      console.log('Getting user session...');
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { user }, error } = await supabase.auth.getUser();
         
         if (error) {
-          console.error('Error getting session:', error);
+          console.error('Error getting user:', error);
           return;
         }
 
-        if (session?.user) {
-          console.log('Session found, user ID:', session.user.id);
-          setUserId(session.user.id);
-        } else {
-          console.log('No session found');
+        if (user) {
+          setUserId(user.id);
         }
       } catch (error) {
         console.error('Error in getUserSession:', error);
@@ -136,8 +113,11 @@ export default function GoalsClient({ userData, profileData, progressData }: Goa
   };
 
   useEffect(() => {
-    fetchGoals();
-  }, [userId, supabase]);
+    if (userId) {
+      fetchGoals();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   // Calculate progress metrics
   const allGoals = goals ? [
@@ -173,6 +153,20 @@ export default function GoalsClient({ userData, profileData, progressData }: Goa
         return currentRatio > closestRatio ? current : closest;
       })
     : undefined;
+
+  // Calculate progress for each term type
+  const calculateTermProgress = (termGoals: string[]) => {
+    if (termGoals.length === 0) return 0;
+    const totalProgress = termGoals.reduce((acc, goal) => {
+      const progress = goalProgress[goal];
+      return acc + (progress ? progress.current / progress.target : 0);
+    }, 0);
+    return Math.round((totalProgress / termGoals.length) * 100);
+  };
+
+  const shortTermProgress = calculateTermProgress(goals?.short_term || []);
+  const mediumTermProgress = calculateTermProgress(goals?.medium_term || []);
+  const longTermProgress = calculateTermProgress(goals?.long_term || []);
 
   // Don't render theme-specific classes until after hydration
   if (!mounted) {
@@ -229,28 +223,16 @@ export default function GoalsClient({ userData, profileData, progressData }: Goa
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <GoalsHeader isDarkMode={isDarkMode} />
+        <GoalsHeader isDarkMode={isDarkMode} onAddClick={() => {}} />
 
         {/* Progress Section */}
         <div className="mt-8">
           <GoalProgress
             isDarkMode={isDarkMode}
             totalProgress={totalProgress}
-            activeGoals={activeGoals.length}
-            completedGoals={completedGoals.length}
-            nextMilestone={nextMilestone ? {
-              id: nextMilestone,
-              user_id: userId,
-              title: nextMilestone,
-              target_amount: goalProgress[nextMilestone]?.target || 0,
-              current_amount: goalProgress[nextMilestone]?.current || 0,
-              deadline: goalProgress[nextMilestone]?.deadline || '',
-              category: null,
-              status: 'active',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            } : undefined}
-            onAddClick={() => setIsAddModalOpen(true)}
+            shortTermProgress={shortTermProgress}
+            mediumTermProgress={mediumTermProgress}
+            longTermProgress={longTermProgress}
           />
         </div>
 

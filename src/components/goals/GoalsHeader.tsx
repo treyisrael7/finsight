@@ -2,9 +2,10 @@
 
 interface GoalsHeaderProps {
   isDarkMode: boolean;
+  onAddClick: () => void;
 }
 
-export default function GoalsHeader({ isDarkMode }: GoalsHeaderProps) {
+export default function GoalsHeader({ isDarkMode, onAddClick }: GoalsHeaderProps) {
   return (
     <div className="px-6 py-4 bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 text-white shadow-inner">
       <h1 className="text-2xl font-bold mb-1">Financial Goals</h1>

@@ -34,14 +34,14 @@ export default function TrackProgress({ isDarkMode }: TrackProgressProps) {
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) return;
 
         // Fetch profile goals
         const { data: profile, error: profileError } = await supabase
           .from('user_profiles')
           .select('financial_goals')
-          .eq('id', session.user.id)
+          .eq('id', user.id)
           .single();
 
         if (profileError) throw profileError;
@@ -54,7 +54,7 @@ export default function TrackProgress({ isDarkMode }: TrackProgressProps) {
         const { data: progress, error: progressError } = await supabase
           .from('goal_progress')
           .select('*')
-          .eq('user_id', session.user.id);
+          .eq('user_id', user.id);
 
         if (progressError) throw progressError;
         

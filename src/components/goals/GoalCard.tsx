@@ -8,35 +8,44 @@ import { formatCurrency, formatDate, calculateProgress } from './utils';
 type Goal = Database['public']['Tables']['financial_goals']['Row'];
 
 interface GoalCardProps {
-  goal: Goal;
-  onEditClick: (goal: Goal) => void;
+  goal: string;
+  progress: number;
+  goalData: any;
+  isEditing: boolean;
+  editValues: any;
+  isDarkMode: boolean;
+  onEditClick: (goalId: string) => void;
   onSaveProgress: (goalId: string) => void;
   onCancelEdit: () => void;
   onDeleteGoal: (goalId: string) => void;
-  onEditValuesChange: (field: 'current_amount' | 'target_amount' | 'deadline', value: string | number) => void;
-  editingGoal?: Goal | null;
-  isDarkMode: boolean;
+  onEditValuesChange: (field: 'current' | 'target' | 'deadline', value: string | number) => void;
+  formatCurrency: (amount: number) => string;
+  formatDate: (dateString: string) => string;
 }
 
 export default function GoalCard({
   goal,
+  progress,
+  goalData,
+  isEditing,
+  editValues,
+  isDarkMode,
   onEditClick,
   onSaveProgress,
   onCancelEdit,
   onDeleteGoal,
   onEditValuesChange,
-  editingGoal,
-  isDarkMode,
+  formatCurrency,
+  formatDate,
 }: GoalCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const isEditing = goal.id === editingGoal?.id; // This will be controlled by the parent component
 
   const handleDeleteClick = () => {
     setIsDeleting(true);
   };
 
   const handleConfirmDelete = () => {
-    onDeleteGoal(goal.id);
+    onDeleteGoal(goalData.id);
     setIsDeleting(false);
   };
 
@@ -44,17 +53,17 @@ export default function GoalCard({
     setIsDeleting(false);
   };
 
-  const progress = calculateProgress(goal.current_amount, goal.target_amount);
+  // progress is now passed as a prop
 
   return (
     <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-900' : 'bg-white'} border border-border shadow-sm`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{goal.title}</h3>
+        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{goal}</h3>
         <div className="flex items-center space-x-2">
           {isEditing ? (
             <>
               <button
-                onClick={() => onSaveProgress(goal.id)}
+                onClick={() => onSaveProgress(goalData.id)}
                 className="p-2 rounded-lg bg-teal-500 hover:bg-teal-600 text-white transition-colors"
               >
                 <Save className="w-4 h-4" />
@@ -69,7 +78,7 @@ export default function GoalCard({
           ) : (
             <>
               <button
-                onClick={() => onEditClick(goal)}
+                onClick={() => onEditClick(goalData.id)}
                 className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'} transition-colors`}
               >
                 <Pencil className="w-4 h-4" />
@@ -107,8 +116,8 @@ export default function GoalCard({
               </label>
               <input
                 type="number"
-                value={goal.current_amount}
-                onChange={(e) => onEditValuesChange('current_amount', parseFloat(e.target.value))}
+                value={editValues?.current || 0}
+                onChange={(e) => onEditValuesChange('current', parseFloat(e.target.value))}
                 className={`w-full px-3 py-2 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
                 min="0"
                 step="0.01"
@@ -120,8 +129,8 @@ export default function GoalCard({
               </label>
               <input
                 type="number"
-                value={goal.target_amount}
-                onChange={(e) => onEditValuesChange('target_amount', parseFloat(e.target.value))}
+                value={editValues?.target || 0}
+                onChange={(e) => onEditValuesChange('target', parseFloat(e.target.value))}
                 className={`w-full px-3 py-2 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
                 min="0"
                 step="0.01"
@@ -133,7 +142,7 @@ export default function GoalCard({
               </label>
               <input
                 type="date"
-                value={goal.deadline}
+                value={editValues?.deadline || ''}
                 onChange={(e) => onEditValuesChange('deadline', e.target.value)}
                 className={`w-full px-3 py-2 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
               />
@@ -143,19 +152,19 @@ export default function GoalCard({
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Current</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatCurrency(goal.current_amount)}</p>
+              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatCurrency(goalData.current)}</p>
             </div>
             <div>
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Target</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatCurrency(goal.target_amount)}</p>
+              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatCurrency(goalData.target)}</p>
             </div>
             <div>
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Deadline</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatDate(goal.deadline)}</p>
+              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatDate(goalData.deadline)}</p>
             </div>
             <div>
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Status</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium capitalize`}>{goal.status}</p>
+              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium capitalize`}>{goalData.status || 'active'}</p>
             </div>
           </div>
         )}

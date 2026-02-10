@@ -62,9 +62,15 @@ export default function ChatInterface({
       }
 
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError || !session) {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
           throw new Error('Not authenticated');
+        }
+
+        // Get session for access token
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          throw new Error('No session');
         }
 
         const response = await fetch(`/api/conversations/${conversationId}/messages`, {
@@ -119,9 +125,15 @@ export default function ChatInterface({
     setError(null);
 
     try {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !session) {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         throw new Error('Not authenticated');
+      }
+
+      // Get session for access token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No session');
       }
 
       const response = await fetch('/api/chat', {

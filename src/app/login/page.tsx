@@ -31,15 +31,9 @@ export default function LoginPage() {
 
     observer.observe(htmlElement, { attributes: true, attributeFilter: ['class'] });
 
-    // Debug logs
-    console.log('Login Page Mounted');
-    console.log('Current URL:', window.location.href);
-    console.log('Document Referrer:', document.referrer);
-
-    // Check session state
+    // Check session state (silently)
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      console.log('Session State:', data.session ? 'Logged In' : 'No Session');
+      await supabase.auth.getSession();
     };
     checkSession();
 
@@ -60,7 +54,6 @@ export default function LoginPage() {
         throw error;
       }
 
-      console.log('Login successful, redirecting to dashboard');
       toast.success('Welcome back!', {
         duration: 2000,
         position: 'top-center',
@@ -121,7 +114,6 @@ export default function LoginPage() {
 
   const handleBackToHome = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log('Back to Home clicked');
     
     // Clear any existing session
     supabase.auth.signOut().then(() => {

@@ -4,18 +4,19 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 
 interface NewGoal {
-  title: string;
-  current_amount: string;
-  target_amount: string;
+  name: string;
+  term: 'short_term' | 'medium_term' | 'long_term';
+  target: number;
   deadline: string;
 }
 
 interface AddGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: () => Promise<void>;
+  onAdd: () => void;
+  onAddGoal: () => void;
   newGoal: NewGoal;
-  onNewGoalChange: (field: keyof NewGoal, value: string | number) => void;
+  onNewGoalChange: (field: string, value: string | number) => void;
   isDarkMode: boolean;
 }
 
@@ -23,6 +24,7 @@ export default function AddGoalModal({
   isOpen,
   onClose,
   onAdd,
+  onAddGoal,
   newGoal,
   onNewGoalChange,
   isDarkMode,

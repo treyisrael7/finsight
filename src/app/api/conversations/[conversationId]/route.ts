@@ -10,8 +10,6 @@ export async function DELETE(
   { params }: { params: { conversationId: string } }
 ) {
   try {
-    console.log('Deleting conversation:', params.conversationId);
-    
     const supabase = createRouteHandlerClient({ cookies });
     
     // Get the access token from the Authorization header
@@ -21,32 +19,26 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const accessToken = authHeader.split(' ')[1];
+    // Verify the user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
     
-    // Verify the session
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError || !session) {
-      console.error('Session error:', sessionError);
+    if (userError || !user) {
+      console.error('User error:', userError);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    console.log('User authenticated:', session.user.id);
 
     // First verify the conversation belongs to the user
     const { data: conversation, error: conversationError } = await supabase
       .from('conversations')
       .select('id')
       .eq('id', params.conversationId)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .single();
 
     if (conversationError || !conversation) {
       console.error('Conversation error:', conversationError);
       return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
     }
-
-    console.log('Conversation verified:', conversation.id);
 
     // Delete all messages in the conversation first
     const { error: messagesError } = await supabase
@@ -56,7 +48,7 @@ export async function DELETE(
 
     if (messagesError) {
       console.error('Error deleting messages:', messagesError);
-      return NextResponse.json({ error: messagesError.message }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to delete messages' }, { status: 500 });
     }
 
     // Then delete the conversation
@@ -64,14 +56,13 @@ export async function DELETE(
       .from('conversations')
       .delete()
       .eq('id', params.conversationId)
-      .eq('user_id', session.user.id);
+      .eq('user_id', user.id);
 
     if (deleteError) {
       console.error('Error deleting conversation:', deleteError);
-      return NextResponse.json({ error: deleteError.message }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to delete conversation' }, { status: 500 });
     }
 
-    console.log('Conversation deleted successfully');
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error in delete conversation API:', error);

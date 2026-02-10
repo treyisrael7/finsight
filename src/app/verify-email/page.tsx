@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../../lib/supabase";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     setMounted(true);
@@ -26,13 +27,13 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session?.user.email_confirmed_at) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email_confirmed_at) {
         router.push("/dashboard");
       }
     };
     checkSession();
-  }, [router]);
+  }, [router, supabase]);
 
   if (!mounted) {
     return null;

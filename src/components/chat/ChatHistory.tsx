@@ -43,9 +43,15 @@ export default function ChatHistory({
   const fetchConversations = async () => {
     try {
       setLoading(true);
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !session) {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         throw new Error('Not authenticated');
+      }
+
+      // Get session for access token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No session');
       }
 
       const response = await fetch('/api/conversations', {
@@ -77,9 +83,15 @@ export default function ChatHistory({
     e.stopPropagation(); // Prevent conversation selection when clicking delete
     
     try {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !session) {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         throw new Error('Not authenticated');
+      }
+
+      // Get session for access token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No session');
       }
 
       // Optimistically update the UI

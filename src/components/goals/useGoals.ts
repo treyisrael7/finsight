@@ -127,7 +127,6 @@ export function useGoals(userId: string, supabase: SupabaseClient<Database>) {
         });
       }
       
-      console.log('Setting organized goals:', organizedGoals);
       setGoals(organizedGoals);
     } catch (error) {
       console.error('Error fetching goals:', error);
