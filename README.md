@@ -40,9 +40,3 @@ https://finsight-mocha.vercel.app/
 Chat requests are rate-limited to keep the demo cheap to run:
 - 3 requests per minute
 - 10 requests per day
-
----
-
-## Notes
-
-This project is meant for educational/demo purposes and does not replace professional financial advice.
