@@ -1,7 +1,9 @@
+'use client';
+
 import { useState, useEffect } from 'react';
-import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
-import LoadingSpinner from "@/components/auth/LoadingSpinner";
+import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
+import LoadingSpinner from '@/components/auth/LoadingSpinner';
 
 interface ProfileActionsProps {
   isEditing: boolean;
@@ -18,45 +20,28 @@ export default function ProfileActions({
   onEdit,
   onCancel,
 }: ProfileActionsProps) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
-    const htmlElement = document.documentElement;
-    setIsDarkMode(htmlElement.classList.contains('dark'));
-
-    const observer = new MutationObserver(() => {
-      setIsDarkMode(htmlElement.classList.contains('dark'));
-    });
-
-    observer.observe(htmlElement, { attributes: true, attributeFilter: ['class'] });
-
-    return () => observer.disconnect();
   }, []);
-
-  // Render null on the server to avoid hydration mismatch
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
 
   return (
-    <div className="flex items-center justify-between pt-6 border-t border-border">
+    <div className="flex items-center justify-between border-t border-[var(--finsight-border)] pt-6">
       <button
         onClick={onBack}
-        className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
+        className="flex items-center gap-2 text-sm font-medium text-[var(--finsight-muted-text)] transition-colors hover:text-[var(--finsight-accent-blue)]"
       >
-        <ArrowLeft className="w-4 h-4 mr-2" />
+        <ArrowLeft className="h-4 w-4" />
         Back
       </button>
-
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center gap-2">
         {isEditing ? (
           <>
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-[var(--finsight-secondary-text)] transition-colors hover:text-[var(--finsight-primary-text)]"
             >
               Cancel
             </button>
@@ -64,27 +49,27 @@ export default function ProfileActions({
               type="submit"
               form="profile-form"
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="rounded-lg bg-[var(--finsight-accent-blue)] px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
-                <span className="flex items-center">
+                <span className="flex items-center gap-2">
                   <LoadingSpinner />
                   Saving...
                 </span>
               ) : (
-                "Save Changes"
+                'Save changes'
               )}
             </button>
           </>
         ) : (
           <button
             onClick={onEdit}
-            className="px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
+            className="rounded-lg bg-[var(--finsight-accent-blue)] px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90"
           >
-            Edit Profile
+            Edit profile
           </button>
         )}
       </div>
     </div>
   );
-} 
+}

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 const themeScript = `(function() {
-  const theme = localStorage.getItem('theme') || 'system';
+  const theme = localStorage.getItem('theme') || 'dark';
   if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     document.documentElement.classList.add('dark');
   } else {
@@ -42,7 +42,7 @@ export default async function RootLayout({
       <body className={`${inter.className} min-h-screen transition-colors duration-200 overflow-x-hidden`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
-import { motion } from 'framer-motion';
-import { Sun, Moon } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import { motion } from "framer-motion";
+import { Sun, Moon } from "lucide-react";
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -13,7 +13,6 @@ export default function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  // Render null on the server and during initial client render to prevent hydration mismatch
   if (!mounted) {
     return null;
   }
@@ -22,15 +21,15 @@ export default function ThemeToggle() {
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="fixed bottom-4 right-4 p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-lg hover:shadow-xl transition-all duration-200 z-50"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="fixed bottom-4 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--finsight-border)] bg-[var(--finsight-card)] text-[var(--finsight-primary-text)] shadow-lg transition-colors hover:border-[var(--finsight-accent-blue)]/30 hover:bg-[var(--finsight-surface)]"
       aria-label="Toggle theme"
     >
-      {theme === 'dark' ? (
-        <Sun className="w-5 h-5" />
+      {theme === "dark" ? (
+        <Sun className="h-5 w-5" />
       ) : (
-        <Moon className="w-5 h-5" />
+        <Moon className="h-5 w-5" />
       )}
     </motion.button>
   );
-} 
+}

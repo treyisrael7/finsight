@@ -5,15 +5,18 @@ import { useState } from 'react';
 import type { Database } from '@/types/supabase';
 import { formatCurrency, formatDate, calculateProgress } from './utils';
 
-type Goal = Database['public']['Tables']['financial_goals']['Row'];
-
 interface GoalCardProps {
   goal: string;
   progress: number;
-  goalData: any;
+  goalData: {
+    id: string;
+    current_amount: number;
+    target_amount: number | null;
+    deadline: string | null;
+    status?: string;
+  };
   isEditing: boolean;
-  editValues: any;
-  isDarkMode: boolean;
+  editValues: { current: number; target: number; deadline: string } | null;
   onEditClick: (goalId: string) => void;
   onSaveProgress: (goalId: string) => void;
   onCancelEdit: () => void;
@@ -23,13 +26,15 @@ interface GoalCardProps {
   formatDate: (dateString: string) => string;
 }
 
+const inputClass =
+  'w-full rounded-lg border border-[var(--finsight-border)] bg-[var(--finsight-surface)] px-3.5 py-2 text-[var(--finsight-primary-text)] placeholder-[var(--finsight-muted-text)] focus:border-[var(--finsight-accent-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--finsight-accent-blue)]/20';
+
 export default function GoalCard({
   goal,
   progress,
   goalData,
   isEditing,
   editValues,
-  isDarkMode,
   onEditClick,
   onSaveProgress,
   onCancelEdit,
@@ -40,54 +45,39 @@ export default function GoalCard({
 }: GoalCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDeleteClick = () => {
-    setIsDeleting(true);
-  };
-
-  const handleConfirmDelete = () => {
-    onDeleteGoal(goalData.id);
-    setIsDeleting(false);
-  };
-
-  const handleCancelDelete = () => {
-    setIsDeleting(false);
-  };
-
-  // progress is now passed as a prop
-
   return (
-    <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-900' : 'bg-white'} border border-border shadow-sm`}>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{goal}</h3>
-        <div className="flex items-center space-x-2">
+    <div className="rounded-xl border border-[var(--finsight-border)] bg-[var(--finsight-card)] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_var(--finsight-border)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-[var(--finsight-primary-text)]">{goal}</h3>
+        <div className="flex items-center gap-2">
           {isEditing ? (
             <>
               <button
                 onClick={() => onSaveProgress(goalData.id)}
-                className="p-2 rounded-lg bg-teal-500 hover:bg-teal-600 text-white transition-colors"
+                className="rounded-lg bg-[var(--finsight-accent-blue)] p-2 text-white transition-colors hover:opacity-90"
               >
-                <Save className="w-4 h-4" />
+                <Save className="h-4 w-4" />
               </button>
               <button
                 onClick={onCancelEdit}
-                className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'} transition-colors`}
+                className="rounded-lg border border-[var(--finsight-border)] bg-[var(--finsight-surface)] p-2 text-[var(--finsight-secondary-text)] transition-colors hover:bg-[var(--finsight-card)]"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
             </>
           ) : (
             <>
               <button
                 onClick={() => onEditClick(goalData.id)}
-                className={`p-2 rounded-lg ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'} transition-colors`}
+                className="rounded-lg border border-[var(--finsight-border)] bg-[var(--finsight-surface)] p-2 text-[var(--finsight-secondary-text)] transition-colors hover:text-[var(--finsight-accent-blue)]"
               >
-                <Pencil className="w-4 h-4" />
+                <Pencil className="h-4 w-4" />
               </button>
               <button
-                onClick={handleDeleteClick}
-                className={`p-2 rounded-lg ${isDarkMode ? 'bg-red-900/30 hover:bg-red-900/50 text-red-400' : 'bg-red-100 hover:bg-red-200 text-red-600'} transition-colors`}
+                onClick={() => setIsDeleting(true)}
+                className="rounded-lg border border-red-500/30 bg-red-500/10 p-2 text-red-600 transition-colors hover:bg-red-500/20 dark:text-red-400"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
               </button>
             </>
           )}
@@ -96,93 +86,113 @@ export default function GoalCard({
 
       <div className="space-y-4">
         <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Progress</span>
-            <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{progress}%</span>
+          <div className="mb-1 flex justify-between text-sm">
+            <span className="text-[var(--finsight-secondary-text)]">Progress</span>
+            <span className="font-medium text-[var(--finsight-primary-text)]">{progress}%</span>
           </div>
-          <div className={`w-full ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-200/50'} rounded-full h-2`}>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--finsight-surface)]">
             <div
-              className="bg-teal-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                width: `${progress}%`,
+                backgroundColor: 'var(--finsight-accent-blue)',
+              }}
             />
           </div>
         </div>
 
-        {isEditing ? (
+        {isEditing && editValues ? (
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mb-1`}>
-                Current Amount
+              <label className="mb-1.5 block text-sm font-medium text-[var(--finsight-secondary-text)]">
+                Current amount
               </label>
               <input
                 type="number"
-                value={editValues?.current || 0}
-                onChange={(e) => onEditValuesChange('current', parseFloat(e.target.value))}
-                className={`w-full px-3 py-2 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
-                min="0"
-                step="0.01"
+                value={editValues.current || ''}
+                onChange={(e) =>
+                  onEditValuesChange('current', e.target.value === '' ? 0 : parseFloat(e.target.value))
+                }
+                className={inputClass}
+                min={0}
+                step={0.01}
               />
             </div>
             <div>
-              <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mb-1`}>
-                Target Amount
+              <label className="mb-1.5 block text-sm font-medium text-[var(--finsight-secondary-text)]">
+                Target amount
               </label>
               <input
                 type="number"
-                value={editValues?.target || 0}
-                onChange={(e) => onEditValuesChange('target', parseFloat(e.target.value))}
-                className={`w-full px-3 py-2 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
-                min="0"
-                step="0.01"
+                value={editValues.target || ''}
+                onChange={(e) =>
+                  onEditValuesChange('target', e.target.value === '' ? 0 : parseFloat(e.target.value))
+                }
+                className={inputClass}
+                min={0}
+                step={0.01}
               />
             </div>
             <div className="col-span-2">
-              <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mb-1`}>
-                Target Date
+              <label className="mb-1.5 block text-sm font-medium text-[var(--finsight-secondary-text)]">
+                Target date
               </label>
               <input
                 type="date"
-                value={editValues?.deadline || ''}
+                value={editValues.deadline || ''}
                 onChange={(e) => onEditValuesChange('deadline', e.target.value)}
-                className={`w-full px-3 py-2 rounded-lg border ${isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
+                className={inputClass}
               />
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Current</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatCurrency(goalData.current_amount ?? (goalData as any).current ?? 0)}</p>
+              <span className="text-[var(--finsight-muted-text)]">Current</span>
+              <p className="font-medium text-[var(--finsight-primary-text)]">
+                {formatCurrency(goalData.current_amount ?? 0)}
+              </p>
             </div>
             <div>
-              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Target</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatCurrency(goalData.target_amount ?? (goalData as any).target ?? 0)}</p>
+              <span className="text-[var(--finsight-muted-text)]">Target</span>
+              <p className="font-medium text-[var(--finsight-primary-text)]">
+                {formatCurrency(goalData.target_amount ?? 0)}
+              </p>
             </div>
             <div>
-              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Deadline</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{formatDate(goalData.deadline ?? '')}</p>
+              <span className="text-[var(--finsight-muted-text)]">Deadline</span>
+              <p className="font-medium text-[var(--finsight-primary-text)]">
+                {formatDate(goalData.deadline ?? '')}
+              </p>
             </div>
             <div>
-              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Status</span>
-              <p className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-medium capitalize`}>{goalData.status || 'active'}</p>
+              <span className="text-[var(--finsight-muted-text)]">Status</span>
+              <p className="font-medium capitalize text-[var(--finsight-primary-text)]">
+                {goalData.status || 'active'}
+              </p>
             </div>
           </div>
         )}
       </div>
 
       {isDeleting && (
-        <div className={`mt-4 p-4 ${isDarkMode ? 'bg-red-900/20' : 'bg-red-50'} rounded-md`}>
-          <p className={`text-sm ${isDarkMode ? 'text-red-400' : 'text-red-700'}`}>Are you sure you want to delete this goal?</p>
-          <div className="mt-2 flex space-x-2">
+        <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-4">
+          <p className="text-sm text-red-600 dark:text-red-400">
+            Are you sure you want to delete this goal?
+          </p>
+          <div className="mt-2 flex gap-2">
             <button
-              onClick={handleConfirmDelete}
-              className="px-3 py-1 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
+              onClick={() => {
+                onDeleteGoal(goalData.id);
+                setIsDeleting(false);
+              }}
+              className="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700"
             >
-              Yes, Delete
+              Yes, delete
             </button>
             <button
-              onClick={handleCancelDelete}
-              className={`px-3 py-1 text-sm font-medium ${isDarkMode ? 'text-gray-300 bg-gray-700 hover:bg-gray-600' : 'text-gray-700 bg-gray-100 hover:bg-gray-200'} rounded-md`}
+              onClick={() => setIsDeleting(false)}
+              className="rounded-lg border border-[var(--finsight-border)] bg-[var(--finsight-surface)] px-3 py-1.5 text-sm font-medium text-[var(--finsight-primary-text)] hover:bg-[var(--finsight-card)]"
             >
               Cancel
             </button>
@@ -191,4 +201,4 @@ export default function GoalCard({
       )}
     </div>
   );
-} 
+}

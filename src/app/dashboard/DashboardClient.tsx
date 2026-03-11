@@ -1,12 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MessageSquare, Target, LogOut, User } from "lucide-react";
+import { MessageSquare, User } from "lucide-react";
 import Link from "next/link";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
 import LogoutButton from "@/components/auth/LogoutButton";
-import TrackProgress from '@/components/dashboard/TrackProgress';
+import TrackProgress from "@/components/dashboard/TrackProgress";
 
 interface DashboardClientProps {
   user: SupabaseUser;
@@ -16,115 +16,113 @@ interface DashboardClientProps {
 }
 
 export default function DashboardClient({ user, profile }: DashboardClientProps) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const htmlElement = document.documentElement;
-    setIsDarkMode(htmlElement.classList.contains('dark'));
-
-    const observer = new MutationObserver(() => {
-      setIsDarkMode(htmlElement.classList.contains('dark'));
-    });
-
-    observer.observe(htmlElement, { attributes: true, attributeFilter: ['class'] });
-
-    return () => observer.disconnect();
   }, []);
 
   if (!mounted) {
     return null;
   }
 
-  const cardClasses = isDarkMode
-    ? 'shadow-md border border-gray-700 bg-gray-800/90'
-    : 'shadow-md border border-gray-300 bg-white';
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Top Navigation Bar */}
-      <div className={`border-b ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className={`text-xl font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-                FinSight
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
+    <div className="min-h-screen bg-[var(--finsight-bg)] finsight-grid-bg">
+      {/* Top navigation */}
+      <header className="sticky top-0 z-50 border-b border-[var(--finsight-border)] bg-[var(--finsight-surface)]/95 backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <Link
+              href="/dashboard"
+              className="text-xl font-semibold tracking-tight text-[var(--finsight-primary-text)]"
+            >
+              FinSight
+            </Link>
+            <div className="flex items-center gap-6">
               <Link
                 href="/profile"
-                className={`flex items-center space-x-2 ${isDarkMode ? 'text-gray-300 hover:text-emerald-400' : 'text-gray-700 hover:text-emerald-500'} transition`}
+                className="flex items-center gap-2 text-sm font-medium text-[var(--finsight-secondary-text)] transition-colors hover:text-[var(--finsight-accent-blue)]"
               >
-                <User className="w-5 h-5" />
-                <span>Profile</span>
+                <User className="h-5 w-5" />
+                Profile
               </Link>
-              <div className={`flex items-center space-x-2 ${isDarkMode ? 'text-gray-300 hover:text-emerald-400' : 'text-gray-700 hover:text-emerald-500'} transition`}>
-                <LogoutButton />
-              </div>
+              <LogoutButton />
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 text-white p-4 rounded-lg shadow-md mb-6">
-          <h1 className="text-xl font-bold mb-1">
-            Welcome back, {profile?.full_name || 'User'}!
+      {/* Main content */}
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Welcome */}
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-8 rounded-xl border border-[var(--finsight-border)] bg-[var(--finsight-card)] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_var(--finsight-border)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)]"
+        >
+          <h1 className="text-xl font-semibold tracking-tight text-[var(--finsight-primary-text)]">
+            Welcome back, {profile?.full_name || "User"}
           </h1>
-          <p className="text-sm text-white/90">
-            Let's continue your financial journey together.
+          <p className="mt-1 text-sm text-[var(--finsight-secondary-text)]">
+            Let&apos;s continue your financial journey together.
           </p>
-        </div>
+        </motion.section>
 
-        {/* Main Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Track Your Progress Section */}
-          <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-md`}>
-            <TrackProgress isDarkMode={isDarkMode} />
-          </div>
+        {/* Two-column layout */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Track progress */}
+          <motion.section
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            className="rounded-xl border border-[var(--finsight-border)] bg-[var(--finsight-card)] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_var(--finsight-border)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)]"
+          >
+            <TrackProgress />
+          </motion.section>
 
-
-          {/* Chat Section */}
-          <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-md`}>
-            <div className="flex items-center space-x-3 mb-4">
-              <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-teal-900/30' : 'bg-teal-100'}`}>
-                <MessageSquare className={`w-5 h-5 ${isDarkMode ? 'text-teal-400' : 'text-teal-600'}`} />
+          {/* Chat with AI */}
+          <motion.section
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="rounded-xl border border-[var(--finsight-border)] bg-[var(--finsight-card)] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_var(--finsight-border)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)]"
+          >
+            <div className="mb-5 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--finsight-border)] bg-[var(--finsight-surface)]">
+                <MessageSquare className="h-5 w-5 text-[var(--finsight-accent-blue)]" />
               </div>
-              <h2 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+              <h2 className="text-lg font-semibold tracking-tight text-[var(--finsight-primary-text)]">
                 Chat with AI
               </h2>
             </div>
             <div className="space-y-3">
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <h3 className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>
-                  Get Personalized Advice
+              <div className="rounded-lg border border-[var(--finsight-border)] bg-[var(--finsight-surface)]/80 p-4">
+                <h3 className="font-medium text-[var(--finsight-primary-text)]">
+                  Get personalized advice
                 </h3>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
-                  Ask questions about your finances
+                <p className="mt-1 text-sm text-[var(--finsight-secondary-text)]">
+                  Ask questions about your finances.
                 </p>
               </div>
-              <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                <h3 className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>
-                  Financial Planning
+              <div className="rounded-lg border border-[var(--finsight-border)] bg-[var(--finsight-surface)]/80 p-4">
+                <h3 className="font-medium text-[var(--finsight-primary-text)]">
+                  Financial planning
                 </h3>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1`}>
-                  Get help with your goals
+                <p className="mt-1 text-sm text-[var(--finsight-secondary-text)]">
+                  Get help with your goals.
                 </p>
               </div>
             </div>
             <Link
               href="/chat"
-              className={`mt-4 block w-full text-center py-2 px-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-colors`}
+              className="mt-5 flex w-full items-center justify-center rounded-lg bg-[var(--finsight-accent-blue)] py-2.5 px-4 text-sm font-medium text-white transition-colors hover:opacity-90"
             >
-              Start Chat
+              Start chat
             </Link>
-          </div>
+          </motion.section>
         </div>
       </div>
     </div>
   );
-} 
+}

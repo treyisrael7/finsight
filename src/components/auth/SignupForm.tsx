@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { validatePassword } from "@/lib/validation";
 import { rateLimiter } from "@/lib/rateLimit";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import ErrorMessage from "./ErrorMessage";
 import FormInput from "./FormInput";
 import LoadingSpinner from "./LoadingSpinner";
@@ -15,7 +15,7 @@ interface SignupFormProps {
   isDarkMode?: boolean;
 }
 
-export default function SignupForm({ onSuccess, isDarkMode = false }: SignupFormProps) {
+export default function SignupForm({ onSuccess, isDarkMode }: SignupFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -62,15 +62,16 @@ export default function SignupForm({ onSuccess, isDarkMode = false }: SignupForm
         setError(error.message);
       } else {
         rateLimiter.reset(email);
-        toast.success('Please check your email for a confirmation link!', {
+        toast.success("Please check your email for a confirmation link!", {
           duration: 5000,
-          position: 'top-center',
+          position: "top-center",
         });
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        onSuccess();
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
@@ -78,7 +79,7 @@ export default function SignupForm({ onSuccess, isDarkMode = false }: SignupForm
   };
 
   return (
-    <div className="space-y-6">
+    <div className="mt-8 space-y-5">
       {error && <ErrorMessage type="error" message={error} />}
       {validationErrors.length > 0 && (
         <ErrorMessage type="warning" messages={validationErrors} />
@@ -97,7 +98,6 @@ export default function SignupForm({ onSuccess, isDarkMode = false }: SignupForm
         placeholder="Enter your email"
         onChange={setEmail}
         disabled={isRateLimited}
-        isDarkMode={isDarkMode}
       />
 
       <FormInput
@@ -107,17 +107,15 @@ export default function SignupForm({ onSuccess, isDarkMode = false }: SignupForm
         placeholder="Create a password"
         onChange={setPassword}
         disabled={isRateLimited}
-        isDarkMode={isDarkMode}
       />
 
       <FormInput
         id="confirmPassword"
         type="password"
-        label="Confirm Password"
+        label="Confirm password"
         placeholder="Confirm your password"
         onChange={setConfirmPassword}
         disabled={isRateLimited}
-        isDarkMode={isDarkMode}
       />
 
       <motion.button
@@ -125,20 +123,15 @@ export default function SignupForm({ onSuccess, isDarkMode = false }: SignupForm
         whileTap={{ scale: 0.99 }}
         onClick={handleSignup}
         disabled={isLoading || isRateLimited}
-        className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white 
-          ${
-            isLoading || isRateLimited
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700"
-          }`}
+        className="w-full rounded-lg bg-[var(--finsight-accent-blue)] py-3 px-4 text-sm font-medium text-white shadow-sm transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? (
-          <span className="flex items-center">
+          <span className="flex items-center justify-center gap-2">
             <LoadingSpinner />
-            Creating Account...
+            Creating account...
           </span>
         ) : (
-          "Sign Up"
+          "Sign up"
         )}
       </motion.button>
     </div>

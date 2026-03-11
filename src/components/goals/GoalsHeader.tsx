@@ -1,15 +1,18 @@
 'use client';
 
 interface GoalsHeaderProps {
-  isDarkMode: boolean;
-  onAddClick: () => void;
+  onAddClick?: () => void;
 }
 
-export default function GoalsHeader({ isDarkMode, onAddClick }: GoalsHeaderProps) {
+export default function GoalsHeader({ onAddClick }: GoalsHeaderProps) {
   return (
-    <div className="px-6 py-4 bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 text-white shadow-inner">
-      <h1 className="text-2xl font-bold mb-1">Financial Goals</h1>
-      <p className="text-white/90 text-sm">Track and manage your financial objectives</p>
+    <div className="rounded-xl border border-[var(--finsight-border)] bg-[var(--finsight-card)] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_var(--finsight-border)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+      <h1 className="text-2xl font-semibold tracking-tight text-[var(--finsight-primary-text)]">
+        Financial goals
+      </h1>
+      <p className="mt-1 text-sm text-[var(--finsight-secondary-text)]">
+        Track and manage your financial objectives
+      </p>
     </div>
   );
-} 
+}

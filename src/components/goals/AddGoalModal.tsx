@@ -17,8 +17,11 @@ interface AddGoalModalProps {
   onAdd: () => void;
   newGoal: NewGoal;
   onNewGoalChange: (field: keyof NewGoal, value: string | number) => void;
-  isDarkMode: boolean;
+  isDarkMode?: boolean;
 }
+
+const inputClass =
+  'mt-1 block w-full rounded-lg border border-[var(--finsight-border)] bg-[var(--finsight-surface)] px-3.5 py-2 text-[var(--finsight-primary-text)] placeholder-[var(--finsight-muted-text)] focus:border-[var(--finsight-accent-blue)] focus:outline-none focus:ring-2 focus:ring-[var(--finsight-accent-blue)]/20';
 
 export default function AddGoalModal({
   isOpen,
@@ -26,7 +29,6 @@ export default function AddGoalModal({
   onAdd,
   newGoal,
   onNewGoalChange,
-  isDarkMode,
 }: AddGoalModalProps) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -40,7 +42,7 @@ export default function AddGoalModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-25" />
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -54,105 +56,82 @@ export default function AddGoalModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className={`w-full max-w-md transform overflow-hidden rounded-2xl p-6 text-left align-middle shadow-xl transition-all ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-xl border border-[var(--finsight-border)] bg-[var(--finsight-card)] p-6 text-left align-middle shadow-xl">
                 <Dialog.Title
                   as="h3"
-                  className={`text-lg font-medium leading-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  className="text-lg font-semibold leading-6 text-[var(--finsight-primary-text)]"
                 >
-                  Add New Goal
+                  Add new goal
                 </Dialog.Title>
 
                 <div className="mt-4 space-y-4">
                   <div>
-                    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      Goal Title
+                    <label className="block text-sm font-medium text-[var(--finsight-secondary-text)]">
+                      Goal title
                     </label>
                     <input
                       type="text"
                       value={newGoal.title || ''}
                       onChange={(e) => onNewGoalChange('title', e.target.value)}
-                      className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                        isDarkMode 
-                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                          : 'border-gray-300'
-                      }`}
+                      className={inputClass}
                       placeholder="Enter goal title"
                     />
                   </div>
-
                   <div>
-                    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      Initial Amount
+                    <label className="block text-sm font-medium text-[var(--finsight-secondary-text)]">
+                      Initial amount
                     </label>
                     <input
                       type="number"
                       value={newGoal.current_amount ?? ''}
                       onChange={(e) => onNewGoalChange('current_amount', e.target.value)}
-                      className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                        isDarkMode 
-                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                          : 'border-gray-300'
-                      }`}
-                      min="0"
-                      step="0.01"
+                      className={inputClass}
+                      min={0}
+                      step={0.01}
                       placeholder="Enter initial amount"
                     />
                   </div>
-
                   <div>
-                    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      Target Amount
+                    <label className="block text-sm font-medium text-[var(--finsight-secondary-text)]">
+                      Target amount
                     </label>
                     <input
                       type="number"
                       value={newGoal.target_amount ?? ''}
                       onChange={(e) => onNewGoalChange('target_amount', e.target.value)}
-                      className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                        isDarkMode 
-                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                          : 'border-gray-300'
-                      }`}
-                      min="0"
-                      step="0.01"
+                      className={inputClass}
+                      min={0}
+                      step={0.01}
                       placeholder="Enter target amount"
                     />
                   </div>
-
                   <div>
-                    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                      Target Date
+                    <label className="block text-sm font-medium text-[var(--finsight-secondary-text)]">
+                      Target date
                     </label>
                     <input
                       type="date"
                       value={newGoal.deadline || ''}
                       onChange={(e) => onNewGoalChange('deadline', e.target.value)}
-                      className={`mt-1 block w-full rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
-                        isDarkMode 
-                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                          : 'border-gray-300'
-                      }`}
+                      className={inputClass}
                     />
                   </div>
                 </div>
 
-                <div className="mt-6 flex justify-end space-x-3">
+                <div className="mt-6 flex justify-end gap-3">
                   <button
                     type="button"
-                    className={`inline-flex justify-center rounded-md border px-4 py-2 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
-                      isDarkMode
-                        ? 'border-gray-600 bg-gray-700 text-gray-200 hover:bg-gray-600'
-                        : 'border-transparent bg-blue-100 text-blue-900 hover:bg-blue-200'
-                    }`}
+                    className="rounded-lg border border-[var(--finsight-border)] bg-[var(--finsight-surface)] px-4 py-2 text-sm font-medium text-[var(--finsight-primary-text)] transition-colors hover:bg-[var(--finsight-card)]"
                     onClick={onClose}
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                    className="rounded-lg bg-[var(--finsight-accent-blue)] px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90"
                     onClick={onAdd}
                   >
-                    Add Goal
+                    Add goal
                   </button>
                 </div>
               </Dialog.Panel>
@@ -162,4 +141,4 @@ export default function AddGoalModal({
       </Dialog>
     </Transition>
   );
-} 
+}

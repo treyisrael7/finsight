@@ -1,474 +1,304 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import MainLayout from "@/components/layout/MainLayout";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, MessageSquare, Target, BookOpen, Sparkles, Shield, Brain, TrendingUp } from "lucide-react";
+import LandingNav from "@/components/landing/LandingNav";
+import FinancialGraph3D from "@/components/landing/FinancialGraph3D";
+import ProductMockup from "@/components/landing/ProductMockup";
+import { MessageSquare, BarChart3, Compass } from "lucide-react";
+
+const features = [
+  {
+    icon: MessageSquare,
+    title: "Chat with your finances",
+    description: "Ask questions about spending, saving, and investing.",
+  },
+  {
+    icon: BarChart3,
+    title: "See the story behind your numbers",
+    description: "Understand where your money goes with clear insights.",
+  },
+  {
+    icon: Compass,
+    title: "Plan with more confidence",
+    description: "Explore better financial decisions with contextual AI guidance.",
+  },
+];
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0 },
+};
 
 export default function Home() {
-  const router = useRouter();
-  const supabase = createClientComponentClient();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const htmlElement = document.documentElement;
-    setIsDarkMode(htmlElement.classList.contains('dark'));
-
-    const observer = new MutationObserver(() => {
-      setIsDarkMode(htmlElement.classList.contains('dark'));
-    });
-
-    observer.observe(htmlElement, { attributes: true, attributeFilter: ['class'] });
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      sessionStorage.setItem('preventRedirect', 'true');
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
   return (
-    <MainLayout>
-      {/* Hero Section */}
-      <motion.section
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Background Gradient */}
-        <motion.div 
-          className="absolute left-1/2 right-1/2 -mx-[50vw] w-[100vw] h-full bg-gradient-to-br from-emerald-600 via-teal-500 to-blue-600"
-          animate={{
-            backgroundPosition: ['0% 0%', '100% 100%'],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            repeatType: "reverse",
-            ease: "linear"
-          }}
-        >
-          <div className="absolute inset-0 bg-[url('/images/grid.svg')] opacity-10"></div>
-          {/* Floating Orbs */}
-          <motion.div
-            className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl"
-            animate={{
-              x: [0, 30, 0],
-              y: [0, 20, 0],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          <motion.div
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"
-            animate={{
-              x: [0, -40, 0],
-              y: [0, -30, 0],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        </motion.div>
+    <div className="min-h-screen bg-finsight-bg text-finsight-primary-text finsight-grid-bg">
+      <LandingNav />
 
-        {/* Login Button */}
-        <motion.div
-          className="absolute top-8 right-8 z-20"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Link
-              href="/login"
-              className="group bg-white/20 backdrop-blur-sm text-white border border-white/30 px-6 py-2 rounded-lg text-base font-semibold hover:bg-white/20 transition flex items-center gap-2"
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-finsight-border px-4 pt-16 pb-24 sm:px-6 lg:px-8 lg:pt-24 lg:pb-32">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 lg:items-center">
+            <motion.div
+              className="relative z-10"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              Login
-              <motion.div
-                animate={{ rotate: [0, 10, 0, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Shield className="w-4 h-4" />
-              </motion.div>
-            </Link>
-          </motion.div>
-        </motion.div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <motion.h1 
-              className="text-5xl md:text-6xl font-bold text-white mb-6"
-              animate={{
-                textShadow: [
-                  "0 0 20px rgba(255,255,255,0.1)",
-                  "0 0 30px rgba(255,255,255,0.2)",
-                  "0 0 20px rgba(255,255,255,0.1)"
-                ]
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              Your AI-Powered
-              <motion.span 
-                className="block mt-2 bg-clip-text text-transparent bg-gradient-to-r from-emerald-200 to-blue-200"
-                animate={{
-                  backgroundPosition: ['0% 0%', '100% 100%'],
-                }}
-                transition={{
-                  duration: 10,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  ease: "linear"
-                }}
-              >
-                Financial Guide
-              </motion.span>
-            </motion.h1>
-            <motion.p 
-              className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto"
-              animate={{
-                opacity: [0.9, 1, 0.9]
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              Skip the boring financial advice. Get real insights, clear explanations, and actionable tips through natural conversations.
-            </motion.p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  href="#features"
-                  className="group bg-white text-emerald-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition flex items-center gap-2"
-                >
-                  Learn More
-                  <motion.div
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </motion.div>
-                </Link>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
+              <h1 className="max-w-[28rem] text-4xl font-semibold leading-[1.15] tracking-tight text-finsight-primary-text sm:text-5xl sm:leading-[1.12] lg:text-[2.75rem]">
+                Your AI copilot for smarter financial decisions
+              </h1>
+              <p className="mt-6 max-w-[32rem] text-lg leading-[1.6] text-finsight-secondary-text">
+                Track spending, understand your cash flow, and explore smarter saving and investing decisions through an AI-powered conversational interface.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
                 <Link
                   href="/signup"
-                  className="group bg-emerald-500/10 text-white border border-white/20 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-emerald-500/20 transition flex items-center gap-2"
+                  className="inline-flex items-center justify-center rounded-lg bg-finsight-accent-blue px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-finsight-accent-blue/90 hover:shadow-[0_0_20px_rgba(79,140,255,0.2)]"
                 >
-                  Get Started
-                  <motion.div
-                    animate={{ rotate: [0, 10, 0, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <Sparkles className="w-5 h-5" />
-                  </motion.div>
+                  Try Demo
                 </Link>
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
+                <Link
+                  href="#features"
+                  className="inline-flex items-center justify-center rounded-lg border border-finsight-border bg-transparent px-5 py-2.5 text-sm font-medium text-finsight-primary-text transition-colors hover:border-finsight-accent-blue/40 hover:text-finsight-accent-blue"
+                >
+                  See Features
+                </Link>
+              </div>
+              <p className="mt-8 text-sm text-finsight-muted-text">
+                Budgeting • Savings Insights • Portfolio Awareness
+              </p>
+            </motion.div>
 
-        {/* Scroll Indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          animate={{ 
-            y: [0, 10, 0],
-            scale: [1, 1.05, 1]
-          }}
-          transition={{ 
-            repeat: Infinity, 
-            duration: 2,
-            ease: "easeInOut"
-          }}
-        >
-          <div className="relative w-6 h-10">
-            <div className="absolute inset-0 border-2 border-white/30 rounded-full flex justify-center overflow-hidden">
-              <motion.div 
-                className="w-1 h-3 bg-white/50 rounded-full mt-2"
-                animate={{ 
-                  y: [0, 12, 0],
-                  opacity: [0.5, 1, 0.5]
-                }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 1.5,
-                  ease: "easeInOut"
-                }}
-              />
-            </div>
-            <motion.div 
-              className="absolute inset-0 border-2 border-white/30 rounded-full"
-              animate={{ 
-                scale: [1, 1.1, 1],
-                opacity: [0.3, 0.1, 0.3]
-              }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 2,
-                ease: "easeInOut"
-              }}
-            />
+            <motion.div
+              className="relative flex min-h-[440px] items-center justify-center"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+            >
+              {/* 3D graph behind mockup */}
+              <FinancialGraph3D />
+              <div className="relative z-10 w-full flex justify-center">
+                <ProductMockup />
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
-      </motion.section>
-
-      {/* Features Section */}
-      <motion.section
-        id="features"
-        className={`py-24 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} relative overflow-hidden`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0 bg-[url('/images/grid.svg')]"></div>
         </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <motion.div 
-            className="text-center mb-16"
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+      </section>
+
+      {/* Features */}
+      <section
+        id="features"
+        className="border-b border-finsight-border px-4 py-20 sm:px-6 lg:px-8 lg:py-28"
+      >
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
           >
-            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              Why You'll Love It
+            <h2 className="text-2xl font-semibold tracking-tight text-finsight-primary-text sm:text-3xl">
+              Built for clarity and control
             </h2>
-            <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} max-w-2xl mx-auto`}>
-              Financial advice that actually makes sense, minus the jargon
+            <p className="mx-auto mt-3 max-w-2xl text-finsight-secondary-text">
+              One place to understand your money and get actionable guidance.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <MessageSquare className="w-6 h-6" />,
-                title: "Natural Conversations",
-                description: "No financial jargon here. Just clear, straightforward advice.",
-              },
-              {
-                icon: <Target className="w-6 h-6" />,
-                title: "Smart Money Moves",
-                description: "Get personalized tips that actually make sense for your situation.",
-              },
-              {
-                icon: <Brain className="w-6 h-6" />,
-                title: "AI That Adapts",
-                description: "Your AI guide learns your style and adapts to how you think about money.",
-              },
-              {
-                icon: <TrendingUp className="w-6 h-6" />,
-                title: "Smart Insights",
-                description: "Get personalized financial insights and recommendations based on your goals.",
-              },
-              {
-                icon: <Shield className="w-6 h-6" />,
-                title: "Your Money, Your Rules",
-                description: "We keep your chats private and never store sensitive financial info.",
-              },
-              {
-                icon: <Sparkles className="w-6 h-6" />,
-                title: "Always Here to Help",
-                description: "Need advice at 2 AM? Your AI guide is ready when you are.",
-              },
-            ].map((feature, index) => (
+          <motion.div
+            className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-40px" }}
+          >
+            {features.map((feature) => (
               <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ 
-                  delay: index * 0.1,
-                  type: "spring", 
-                  stiffness: 400, 
-                  damping: 25 
-                }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-                className={`p-6 rounded-2xl ${
-                  isDarkMode 
-                    ? 'bg-gray-800/50 border border-gray-700' 
-                    : 'bg-white border border-gray-100'
-                } shadow-lg hover:shadow-xl transition-all duration-200`}
+                key={feature.title}
+                variants={item}
+                className="group relative rounded-xl border border-finsight-border bg-finsight-surface/80 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-finsight-accent-blue/20 hover:shadow-[0_8px_32px_rgba(0,0,0,0.2),0_0_0_1px_rgba(79,140,255,0.08)]"
               >
-                <motion.div 
-                  className={`p-3 rounded-lg w-fit mb-4 ${
-                    isDarkMode ? 'bg-emerald-500/10' : 'bg-emerald-50'
-                  }`}
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 20 }}
-                >
-                  <div className="text-emerald-500">{feature.icon}</div>
-                </motion.div>
-                <h3 className={`text-xl font-semibold mb-2 ${
-                  isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}>
+                <div className="relative">
+                  <div
+                    className="absolute -inset-px rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    style={{
+                      background: "radial-gradient(120px 80px at 2rem 2rem, rgba(79,140,255,0.06), transparent 70%)",
+                    }}
+                    aria-hidden
+                  />
+                  <div
+                    className="relative flex h-11 w-11 items-center justify-center rounded-lg border border-finsight-border bg-finsight-card/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+                    style={{
+                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04), 0 0 24px rgba(79,140,255,0.06)",
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 rounded-lg opacity-80"
+                      style={{
+                        background: "radial-gradient(ellipse 70% 70% at 50% 50%, rgba(79,140,255,0.12), transparent 70%)",
+                      }}
+                      aria-hidden
+                    />
+                    <feature.icon className="relative h-5 w-5 text-finsight-accent-blue" />
+                  </div>
+                </div>
+                <h3 className="mt-5 text-lg font-semibold tracking-tight text-finsight-primary-text">
                   {feature.title}
                 </h3>
-                <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                <p className="mt-2.5 text-sm leading-[1.55] text-finsight-secondary-text">
                   {feature.description}
                 </p>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* CTA Section */}
-      <motion.section
-        className="relative py-24 overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+      {/* Product Walkthrough */}
+      <section
+        id="how-it-works"
+        className="border-b border-finsight-border px-4 py-20 sm:px-6 lg:px-8 lg:py-28"
       >
-        <motion.div 
-          className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600"
-          animate={{
-            backgroundPosition: ['0% 0%', '100% 100%'],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            repeatType: "reverse",
-            ease: "linear"
-          }}
-        >
-          <div className="absolute inset-0 bg-[url('/images/grid.svg')] opacity-10"></div>
-          {/* Floating Orbs */}
+        <div className="mx-auto max-w-7xl">
           <motion.div
-            className="absolute top-1/4 right-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl"
-            animate={{
-              x: [0, -30, 0],
-              y: [0, 20, 0],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
+            className="text-center"
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+          >
+            <h2 className="text-2xl font-semibold tracking-tight text-finsight-primary-text sm:text-3xl">
+              How FinSight works
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-finsight-secondary-text">
+              Chat with your finances and see the full picture in one place.
+            </p>
+          </motion.div>
+
           <motion.div
-            className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"
-            animate={{
-              x: [0, 40, 0],
-              y: [0, -30, 0],
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        </motion.div>
-        
-        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
-          <motion.h2 
-            className="text-3xl md:text-4xl font-bold text-white mb-6"
-            animate={{
-              textShadow: [
-                "0 0 20px rgba(255,255,255,0.1)",
-                "0 0 30px rgba(255,255,255,0.2)",
-                "0 0 20px rgba(255,255,255,0.1)"
-              ]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
+            className="mt-16 rounded-xl border border-finsight-border bg-finsight-card/60 p-6 shadow-[0_8px_40px_rgba(0,0,0,0.2),0_0_0_1px_rgba(255,255,255,0.04)] lg:p-8"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
           >
-            Ready to Get Started?
-          </motion.h2>
-          <motion.p 
-            className="text-xl text-white/90 mb-8"
-            animate={{
-              opacity: [0.9, 1, 0.9]
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          >
-            Join now and let's make managing money a little less complicated
-          </motion.p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link
-                href="/signup"
-                className="inline-flex items-center gap-2 bg-white text-emerald-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition"
-              >
-                Get Started
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <ArrowRight className="w-5 h-5" />
-                </motion.div>
-              </Link>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 bg-emerald-500/10 text-white border border-white/20 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-emerald-500/20 transition"
-              >
-                Login
-                <Shield className="w-5 h-5" />
-              </Link>
-            </motion.div>
-          </div>
+            <div className="grid gap-8 lg:grid-cols-5">
+              <div className="lg:col-span-2 rounded-xl border border-finsight-border bg-finsight-surface/90 p-5 shadow-sm">
+                <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-finsight-muted-text">
+                  AI chat
+                </p>
+                <div className="space-y-3">
+                  <div className="rounded-lg border border-finsight-border/60 bg-finsight-bg/70 px-4 py-3">
+                    <p className="text-sm leading-relaxed text-finsight-secondary-text">
+                      &quot;Can I afford to increase my monthly investment by $200?&quot;
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-finsight-border bg-finsight-card/80 px-4 py-3 shadow-sm">
+                    <p className="text-sm leading-[1.55] text-finsight-primary-text">
+                      Based on your income and expenses, you have about $2,060 in free cash flow. Increasing investments by $200 is comfortable—you&apos;d still have $1,860 for savings and buffer.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="lg:col-span-3 space-y-5">
+                <p className="text-[10px] font-medium uppercase tracking-wider text-finsight-muted-text">
+                  Financial summary
+                </p>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                  {["Income", "Expenses", "Savings rate", "Free cash flow"].map((label, i) => (
+                    <div
+                      key={label}
+                      className="rounded-xl border border-finsight-border bg-finsight-surface/80 px-4 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
+                    >
+                      <p className="text-[10px] font-medium uppercase tracking-wider text-finsight-muted-text">
+                        {label}
+                      </p>
+                      <p className="mt-1.5 text-base font-semibold tracking-tight text-finsight-primary-text">
+                        {["$6,240", "$4,180", "33%", "$2,060"][i]}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-xl border border-finsight-border bg-finsight-surface/60 p-5">
+                  <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-finsight-muted-text">
+                    Spending trend
+                  </p>
+                  <div className="flex h-20 items-end gap-1.5">
+                    {[40, 55, 48, 62, 52, 70, 58, 65, 50].map((h, i) => (
+                      <motion.div
+                        key={i}
+                        className="flex-1 rounded-sm"
+                        style={{
+                          backgroundColor: "var(--finsight-accent-blue)",
+                          opacity: 0.6,
+                          minHeight: 4,
+                        }}
+                        initial={{ height: 0 }}
+                        whileInView={{ height: `${h}%` }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.04, duration: 0.35 }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
-      </motion.section>
-    </MainLayout>
+      </section>
+
+      {/* Pricing anchor / placeholder */}
+      <section id="pricing" className="scroll-mt-20 border-b border-finsight-border px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-xl font-semibold text-finsight-primary-text">Simple pricing</h2>
+          <p className="mt-2 text-finsight-secondary-text">Plans and pricing coming soon. Try the demo to explore FinSight.</p>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <motion.div
+          className="mx-auto max-w-3xl text-center"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4 }}
+        >
+          <h2 className="text-2xl font-semibold tracking-tight text-finsight-primary-text sm:text-3xl lg:text-4xl">
+            Make smarter money decisions with FinSight
+          </h2>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center rounded-lg bg-finsight-accent-blue px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-finsight-accent-blue/90"
+            >
+              Try Demo
+            </Link>
+            <Link
+              href="#pricing"
+              className="inline-flex items-center justify-center rounded-lg border border-finsight-border bg-transparent px-6 py-3 text-sm font-medium text-finsight-primary-text transition-colors hover:border-finsight-accent-blue/40 hover:text-finsight-accent-blue"
+            >
+              View Pricing
+            </Link>
+          </div>
+        </motion.div>
+      </section>
+
+      <footer className="border-t border-finsight-border px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl text-center text-sm text-finsight-muted-text">
+          © {new Date().getFullYear()} FinSight. AI-powered financial insights.
+        </div>
+      </footer>
+    </div>
   );
 }

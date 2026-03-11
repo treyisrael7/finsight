@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { LogOut } from "lucide-react";
 
 export default function LogoutButton() {
@@ -17,10 +17,10 @@ export default function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      className="flex items-center gap-2 text-sm font-medium text-[var(--finsight-secondary-text)] transition-colors hover:text-[var(--finsight-accent-blue)]"
     >
-      <LogOut className="w-4 h-4" />
+      <LogOut className="h-4 w-4" />
       Logout
     </button>
   );
-} 
+}

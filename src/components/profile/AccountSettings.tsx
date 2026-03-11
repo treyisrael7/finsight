@@ -1,51 +1,44 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import FormInput from "../auth/FormInput";
-import LoadingSpinner from "../auth/LoadingSpinner";
-import { LogOut, User, Bell, Shield, HelpCircle } from 'lucide-react';
-import ThemeToggle from '@/components/ThemeToggle';
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+import FormInput from '../auth/FormInput';
+import LoadingSpinner from '../auth/LoadingSpinner';
 
 interface AccountSettingsProps {
-  isDarkMode: boolean;
+  isDarkMode?: boolean;
 }
 
 export default function AccountSettings({ isDarkMode }: AccountSettingsProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const supabase = createClientComponentClient();
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
     if (newPassword !== confirmPassword) {
       toast.error("New passwords don't match");
       setIsLoading(false);
       return;
     }
-
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-
-      toast.success("Password updated successfully");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update password");
+      toast.success('Password updated successfully');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to update password';
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -56,22 +49,16 @@ export default function AccountSettings({ isDarkMode }: AccountSettingsProps) {
       setShowDeleteConfirm(true);
       return;
     }
-
     setIsLoading(true);
-
     try {
-      // Delete the user's account
       const { error } = await supabase.rpc('delete_user');
-
       if (error) throw error;
-
-      // Sign out the user
       await supabase.auth.signOut();
-
-      toast.success("Account deleted successfully");
+      toast.success('Account deleted successfully');
       router.push('/');
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete account");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to delete account';
+      toast.error(msg);
       setShowDeleteConfirm(false);
     } finally {
       setIsLoading(false);
@@ -93,115 +80,103 @@ export default function AccountSettings({ isDarkMode }: AccountSettingsProps) {
   };
 
   const handleBack = () => {
-    if (document.referrer.includes('/chat')) {
+    if (typeof document !== 'undefined' && document.referrer.includes('/chat')) {
       router.push('/chat');
     } else {
       router.push('/dashboard');
     }
   };
 
+  const sectionClass =
+    'rounded-xl border border-[var(--finsight-border)] bg-[var(--finsight-card)] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_var(--finsight-border)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)]';
+
   return (
     <div className="space-y-8">
       <div>
-        <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-          Account Settings
+        <h2 className="mb-4 text-xl font-semibold text-[var(--finsight-primary-text)]">
+          Account settings
         </h2>
-        
-        {/* Change Password Section */}
-        <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-md mb-6`}>
-          <h3 className={`text-lg font-medium mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Change Password
+
+        <div className={`mb-6 ${sectionClass}`}>
+          <h3 className="mb-4 text-lg font-medium text-[var(--finsight-primary-text)]">
+            Change password
           </h3>
           <form onSubmit={handlePasswordChange} className="space-y-4">
             <FormInput
               id="currentPassword"
               type="password"
-              label="Current Password"
+              label="Current password"
               placeholder="Enter current password"
               onChange={setCurrentPassword}
-              isDarkMode={isDarkMode}
             />
             <FormInput
               id="newPassword"
               type="password"
-              label="New Password"
+              label="New password"
               placeholder="Enter new password"
               onChange={setNewPassword}
-              isDarkMode={isDarkMode}
             />
             <FormInput
               id="confirmPassword"
               type="password"
-              label="Confirm New Password"
+              label="Confirm new password"
               placeholder="Confirm new password"
               onChange={setConfirmPassword}
-              isDarkMode={isDarkMode}
             />
             <motion.button
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
               type="submit"
               disabled={isLoading}
-              className={`w-full py-2 px-4 rounded-lg text-white font-medium
-                ${isLoading 
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-teal-600 hover:bg-teal-700'}`}
+              className="w-full rounded-lg bg-[var(--finsight-accent-blue)] px-4 py-2 font-medium text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? (
-                <span className="flex items-center justify-center">
+                <span className="flex items-center justify-center gap-2">
                   <LoadingSpinner />
                   Updating...
                 </span>
               ) : (
-                "Update Password"
+                'Update password'
               )}
             </motion.button>
           </form>
         </div>
 
-        {/* Delete Account Section */}
-        <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-md mb-6`}>
-          <h3 className={`text-lg font-medium mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Delete Account
+        <div className={`mb-6 ${sectionClass}`}>
+          <h3 className="mb-4 text-lg font-medium text-[var(--finsight-primary-text)]">
+            Delete account
           </h3>
-          <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            {showDeleteConfirm 
-              ? "Are you sure? This action cannot be undone."
-              : "Permanently delete your account and all associated data."}
+          <p className="mb-4 text-[var(--finsight-secondary-text)]">
+            {showDeleteConfirm
+              ? 'Are you sure? This action cannot be undone.'
+              : 'Permanently delete your account and all associated data.'}
           </p>
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             onClick={handleDeleteAccount}
             disabled={isLoading}
-            className={`w-full py-2 px-4 rounded-lg text-white font-medium
-              ${isLoading 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-red-600 hover:bg-red-700'}`}
+            className="w-full rounded-lg bg-red-600 px-4 py-2 font-medium text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isLoading ? (
-              <span className="flex items-center justify-center">
+              <span className="flex items-center justify-center gap-2">
                 <LoadingSpinner />
                 Deleting...
               </span>
             ) : showDeleteConfirm ? (
-              "Confirm Delete"
+              'Confirm delete'
             ) : (
-              "Delete Account"
+              'Delete account'
             )}
           </motion.button>
         </div>
 
-        {/* Back Button */}
-        <div className="flex justify-center mt-6">
+        <div className="mt-6 flex justify-center">
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
             onClick={handleBack}
-            className={`px-6 py-2 rounded-lg font-medium
-              ${isDarkMode 
-                ? 'text-gray-300 hover:text-teal-400' 
-                : 'text-gray-600 hover:text-teal-500'} transition-colors`}
+            className="rounded-lg px-6 py-2 font-medium text-[var(--finsight-secondary-text)] transition-colors hover:text-[var(--finsight-accent-blue)]"
           >
             ← Back
           </motion.button>
@@ -209,4 +184,4 @@ export default function AccountSettings({ isDarkMode }: AccountSettingsProps) {
       </div>
     </div>
   );
-} 
+}

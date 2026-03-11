@@ -1,12 +1,6 @@
 'use client';
 
-import { Plus, RefreshCw } from 'lucide-react';
-import type { Database } from '@/types/supabase';
-
-type Goal = Database['public']['Tables']['financial_goals']['Row'];
-
 interface GoalProgressProps {
-  isDarkMode: boolean;
   totalProgress: number;
   shortTermProgress: number;
   mediumTermProgress: number;
@@ -14,80 +8,90 @@ interface GoalProgressProps {
 }
 
 export default function GoalProgress({
-  isDarkMode,
   totalProgress,
   shortTermProgress,
   mediumTermProgress,
   longTermProgress,
 }: GoalProgressProps) {
+  const barTrack = "h-2 w-full overflow-hidden rounded-full bg-[var(--finsight-surface)]";
+  const barFill = "h-2 rounded-full transition-all duration-300";
+  const labelClass = "text-sm text-[var(--finsight-secondary-text)]";
+  const valueClass = "text-sm font-medium text-[var(--finsight-primary-text)]";
+
   return (
-    <div className={`p-6 rounded-xl ${
-      isDarkMode ? 'bg-gray-800/50' : 'bg-white/50'
-    } backdrop-blur-sm border ${
-      isDarkMode ? 'border-gray-700' : 'border-gray-200'
-    } shadow-sm`}>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Goal Progress</h2>
-      </div>
+    <div className="rounded-xl border border-[var(--finsight-border)] bg-[var(--finsight-card)] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06),0_0_0_1px_var(--finsight-border)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+      <h2 className="mb-6 text-xl font-semibold tracking-tight text-[var(--finsight-primary-text)]">
+        Goal progress
+      </h2>
 
       <div className="space-y-6">
-        {/* Overall Progress */}
         <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-gray-500 dark:text-gray-400">Overall Progress</span>
-            <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>{totalProgress}%</span>
+          <div className="mb-1 flex justify-between text-sm">
+            <span className={labelClass}>Overall progress</span>
+            <span className={valueClass}>{totalProgress}%</span>
           </div>
-          <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 rounded-full h-2">
+          <div className={barTrack}>
             <div
-              className="bg-teal-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${totalProgress}%` }}
+              className={barFill}
+              style={{
+                width: `${totalProgress}%`,
+                backgroundColor: 'var(--finsight-accent-blue)',
+              }}
             />
           </div>
         </div>
 
-        {/* Term Progress */}
         <div className="space-y-4">
           <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-500 dark:text-gray-400">Short Term</span>
-              <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>{shortTermProgress}%</span>
+            <div className="mb-1 flex justify-between text-sm">
+              <span className={labelClass}>Short term</span>
+              <span className={valueClass}>{shortTermProgress}%</span>
             </div>
-            <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 rounded-full h-2">
+            <div className={barTrack}>
               <div
-                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${shortTermProgress}%` }}
+                className={barFill}
+                style={{
+                  width: `${shortTermProgress}%`,
+                  backgroundColor: 'var(--finsight-accent-blue)',
+                  opacity: 0.9,
+                }}
               />
             </div>
           </div>
-          
           <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-500 dark:text-gray-400">Medium Term</span>
-              <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>{mediumTermProgress}%</span>
+            <div className="mb-1 flex justify-between text-sm">
+              <span className={labelClass}>Medium term</span>
+              <span className={valueClass}>{mediumTermProgress}%</span>
             </div>
-            <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 rounded-full h-2">
+            <div className={barTrack}>
               <div
-                className="bg-yellow-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${mediumTermProgress}%` }}
+                className={barFill}
+                style={{
+                  width: `${mediumTermProgress}%`,
+                  backgroundColor: 'var(--finsight-accent-blue)',
+                  opacity: 0.75,
+                }}
               />
             </div>
           </div>
-          
           <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-500 dark:text-gray-400">Long Term</span>
-              <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>{longTermProgress}%</span>
+            <div className="mb-1 flex justify-between text-sm">
+              <span className={labelClass}>Long term</span>
+              <span className={valueClass}>{longTermProgress}%</span>
             </div>
-            <div className="w-full bg-gray-200/50 dark:bg-gray-700/50 rounded-full h-2">
+            <div className={barTrack}>
               <div
-                className="bg-purple-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${longTermProgress}%` }}
+                className={barFill}
+                style={{
+                  width: `${longTermProgress}%`,
+                  backgroundColor: 'var(--finsight-accent-blue)',
+                  opacity: 0.6,
+                }}
               />
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
-} 
+}

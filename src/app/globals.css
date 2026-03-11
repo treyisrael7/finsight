@@ -3,7 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   :root {
+    /* FinSight light mode */
+    --finsight-bg: #F2F4F8;
+    --finsight-surface: #FFFFFF;
+    --finsight-card: #FFFFFF;
+    --finsight-border: rgba(0, 0, 0, 0.08);
+    --finsight-primary-text: #0B1020;
+    --finsight-secondary-text: #5A6474;
+    --finsight-muted-text: #7F8AA3;
+    --finsight-accent-blue: #4F8CFF;
+    --finsight-accent-green: #22C55E;
+    --finsight-grid: rgba(0, 0, 0, 0.04);
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -27,6 +41,17 @@
   }
 
   .dark {
+    /* FinSight dark mode */
+    --finsight-bg: #0B1020;
+    --finsight-surface: #12182B;
+    --finsight-card: #161D33;
+    --finsight-border: rgba(255, 255, 255, 0.08);
+    --finsight-primary-text: #F3F6FF;
+    --finsight-secondary-text: #AAB3C5;
+    --finsight-muted-text: #7F8AA3;
+    --finsight-accent-blue: #4F8CFF;
+    --finsight-accent-green: #22C55E;
+    --finsight-grid: rgba(255, 255, 255, 0.03);
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 15%;
@@ -148,4 +173,22 @@
 
 .animate-wave-delayed-2 {
   animation: wave-delayed-2 12s ease-in-out infinite;
+}
+
+/* FinSight landing: subtle 3D float */
+@keyframes finsight-float {
+  0%, 100% { transform: translateY(0) translateZ(0); }
+  50% { transform: translateY(-6px) translateZ(4px); }
+}
+
+.animate-finsight-float {
+  animation: finsight-float 8s ease-in-out infinite;
+}
+
+/* FinSight landing: subtle data grid background (theme-aware) */
+.finsight-grid-bg {
+  background-image:
+    linear-gradient(var(--finsight-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--finsight-grid) 1px, transparent 1px);
+  background-size: 48px 48px;
 }

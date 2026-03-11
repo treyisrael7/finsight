@@ -10,6 +10,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        finsight: {
+          bg: "var(--finsight-bg)",
+          surface: "var(--finsight-surface)",
+          card: "var(--finsight-card)",
+          "primary-text": "var(--finsight-primary-text)",
+          "secondary-text": "var(--finsight-secondary-text)",
+          "muted-text": "var(--finsight-muted-text)",
+          "accent-blue": "var(--finsight-accent-blue)",
+          "accent-green": "var(--finsight-accent-green)",
+          border: "var(--finsight-border)",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -43,6 +54,9 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      borderColor: {
+        "finsight-border": "var(--finsight-border)",
       },
       borderRadius: {
         lg: "var(--radius)",
