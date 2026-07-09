@@ -17,6 +17,7 @@ Built as a SaaS-style project with secure authentication, database-level securit
 - Persistent user data storage (Supabase Postgres)
 - Supabase Row Level Security (RLS) for per-user data isolation
 - Rate-limited chat requests to prevent abuse and control token usage
+- Premium fintech UI with light and dark mode
 
 ---
 
